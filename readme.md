@@ -16,8 +16,8 @@ Currently there's no package you can install easily. In future it's planed to ha
 6. Run `pip3 install weconnect[Images]`.
 7. Connect to your Raspberry Pi with an sFTP window.
 8. Copy all files within [/src](/src) to /home/pi/SolarManager
-9. Change needed configuration entries in config.txt (see [Needed configuration](#needed-configuration).
-10. Install the service (see [readme.md](/service/readme.md))
+9. Change needed configuration entries in config.txt (see [Needed configuration](#needed-configuration)).
+10. Install the service (see [readme.md](/service))
 
 # Documentation
 ## Configuration
