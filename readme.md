@@ -8,9 +8,16 @@ The SolarManager is written in Python and uses [WeConnect-python](https://github
 # Installation
 Currently there's no package you can install easily. In future it's planed to have it as a package which installs everything itself. For the moment you can do the following to install it on a Raspberry Pi in headless mode.
 
-TODO: Add steps to install
-
-In the future there will be a package you can install and update easily.
+1. Connect to your Raspberry Pi with a terminal console.
+2. Run `sudo apt update`.
+3. Run `sudo apt full-upgrade`.
+4. Run `sudo apt install python3-pip`.
+5. Run `sudo apt-get install libopenjp2-7`.
+6. Run `pip3 install weconnect[Images]`.
+7. Connect to your Raspberry Pi with an sFTP window.
+8. Copy all files within [/src](/src) to /home/pi/SolarManager
+9. Change needed configuration entries in config.txt (see [Needed configuration](#needed-configuration).
+10. Install the service (see [readme.md](/service/readme.md))
 
 # Documentation
 ## Configuration

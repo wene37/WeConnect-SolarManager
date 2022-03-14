@@ -5,8 +5,7 @@ cd /lib/systemd/system/
 sudo nano SolarManager.service
 ```
 
-Copy content from SolarManager.service into terminal nano editor.
-Run the following commands to install and start the service:
+Copy content from file SolarManager.service into terminal nano editor and save it. Run the following commands to install and start the service:
 ```
 sudo chmod 644 /lib/systemd/system/SolarManager.service
 chmod +x /home/pi/SolarManager/main.py
