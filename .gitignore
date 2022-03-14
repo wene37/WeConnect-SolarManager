@@ -1,0 +1,3 @@
+src/logs/*
+!src/logs/.gitkeep
+**/__pycache__/*

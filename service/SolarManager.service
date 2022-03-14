@@ -1,0 +1,16 @@
+[Unit]
+Description=SolarManager
+After=multi-user.target
+StartLimitIntervalSec=120s
+StartLimitBurst=50
+
+[Service]
+Type=simple
+WorkingDirectory=/home/pi/SolarManager
+User=pi
+ExecStart=/usr/bin/python ./main.py
+Restart=on-failure
+RestartSec=120s
+
+[Install]
+WantedBy=multi-user.target
