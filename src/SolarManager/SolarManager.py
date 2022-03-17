@@ -27,7 +27,7 @@ class SolarManager:
 
         self.minBatteryLoadToStartCharging = configParser.getfloat("SolarManager", "MinBatteryLoadToStartCharging")
         self.minPowerToGridToStartCharging = configParser.getfloat("SolarManager", "MinPowerToGridToStartCharging")
-        self.maxPowerToGridToStopCharging = configParser.getfloat("SolarManager", "MaxPowerToGridToStopCharging")
+        self.maxPowerFromGridToStopCharging = configParser.getfloat("SolarManager", "MaxPowerFromGridToStopCharging")
         self.minBatteryLoad = configParser.getfloat("SolarManager", "MinBatteryLoad")
         self.simulationMode = configParser.getboolean("SolarManager", "SimulationMode")
         self.vin = configParser.get("SolarManager", "VIN")
@@ -117,7 +117,7 @@ class SolarManager:
             return
 
         if vehicle.domains["charging"]["batteryStatus"].currentSOC_pct.value == 100:
-            self.logger.info("Current SoC is 100 -> do nothing")
+            self.logger.info("Current vehicle SoC is 100 -> do nothing")
             return
 
         if vehicle.domains["charging"]["chargingStatus"].chargingState.value is not ChargingStatus.ChargingState.READY_FOR_CHARGING:
@@ -137,8 +137,8 @@ class SolarManager:
             self.charging(vehicle, ChargingState.Off)
             return
 
-        if loadToGridPower < self.maxPowerToGridToStopCharging:
-            self.logger.info(f"Load to grid < {self.maxPowerToGridToStopCharging} (current: {loadToGridPower}) -> stop charging")
+        if loadToGridPower < self.maxPowerFromGridToStopCharging:
+            self.logger.info(f"Load to grid < {self.maxPowerFromGridToStopCharging} (current: {loadToGridPower}) -> stop charging")
             self.charging(vehicle, ChargingState.Off)
             return
 

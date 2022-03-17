@@ -37,7 +37,7 @@ In the config.txt file you find different entries you can or have to change.
 |SolarManager|SolarCheckInterval|Interval for checking the state of the car and solar power.|
 ||MinBatteryLoadToStartCharging|Minimum battery load that charging will be started. Before this SolarManager won't start charging your car.|
 ||MinPowerToGridToStartCharging|Minium power to grid that charging will be started. Below this SolarManager will only start charging if battery load is 100%.|
-||MaxPowerToGridToStopCharging|If your home uses more power SolarManager will stop charging your car. Value is negative because it's a power consumption.|
+||MaxPowerFromGridToStopCharging|If your home uses more power SolarManager will stop charging your car. Value is negative because it's a power consumption.|
 ||MinBatteryLoad|Minium battery load you want to have. If battery loads goes below this, SolarManager will stop charging your car.|
 ||SimulationMode|You can enable simulation mode to only log everything without really start or stop charging your car.|
 ||VehicleNameSuffix|The suffix you need to add to your car's nickname (see below).|

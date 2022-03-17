@@ -1,9 +1,9 @@
 [SolarManager]
 SolarCheckInterval=600
-MinBatteryLoadToStartCharging=90
-MinPowerToGridToStartCharging=0.5
-MaxPowerToGridToStopCharging=-0.5
-MinBatteryLoad=80
+MinBatteryLoadToStartCharging=95
+MinPowerToGridToStartCharging=1
+MaxPowerFromGridToStopCharging=-0.5
+MinBatteryLoad=90
 SimulationMode=False
 VIN=VEHICLE-IDENTIFICATION-NUMBER
 VehicleNameSuffix=(SMC)
