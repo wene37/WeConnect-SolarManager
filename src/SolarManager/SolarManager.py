@@ -3,6 +3,7 @@ import configparser
 import json
 
 from SolarEdge import SolarEdge
+from GeoLocationManager import GeoLocationManager
 from SolarManager.Elements.enums import ChargingState
 
 from weconnect import weconnect, addressable
@@ -32,6 +33,7 @@ class SolarManager:
         self.simulationMode = configParser.getboolean("SolarManager", "SimulationMode")
         self.vin = configParser.get("SolarManager", "VIN")
         self.vehicleNameSuffix = configParser.get("SolarManager", "VehicleNameSuffix").lower()
+        self.restrictedHoursBeforeSunset = configParser.getint("SolarManager", "RestrictedHoursBeforeSunset")
 
         self.isCharging = False
         self.chargingChangeRequested = False
@@ -39,6 +41,7 @@ class SolarManager:
         self.logger.info(f"Simulation mode: {self.simulationMode}")
 
         self.solarEdge = SolarEdge.SolarEdge(configFileName)
+        self.geoLocationManager = GeoLocationManager.GeoLocationManager(configFileName)
 
         self.logger.info("Initialize WeConnect")
         self.weConnect = weconnect.WeConnect(username=username, password=password, updateAfterLogin=False, loginOnInit=False)
@@ -107,6 +110,8 @@ class SolarManager:
 
     def checkStartCharging(self, loadToGridPower: float, batteryChargeLevel: float, vehicle: Vehicle) -> None:
         self.logger.info("Check start charging")
+
+        #todo: check sunset time somewhere here
 
         if loadToGridPower <= 0:
             self.logger.info(f"Load to grid is {loadToGridPower} -> do nothing")
