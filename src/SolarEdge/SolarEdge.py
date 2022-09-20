@@ -2,6 +2,7 @@ import logging
 import requests
 import configparser
 import json
+import urllib.parse
 
 class SolarEdge:
     def __init__(
@@ -14,7 +15,11 @@ class SolarEdge:
         configParser = configparser.ConfigParser()
         configParser.read(configFileName)
 
-        self.apiUrl = configParser.get("SolarEdge", "ApiUrl")
+        apiKey = configParser.get("SolarEdge", "ApiKey")
+        locationId = configParser.get("SolarEdge", "LocationId")
+        apiUrl = configParser.get("SolarEdge", "ApiUrl")
+
+        self.apiUrl = apiUrl.replace("{{LOCATION_ID}}", urllib.parse.quote(locationId, safe='')).replace("{{API_KEY}}", urllib.parse.quote(apiKey, safe=''))
 
     def __del__(self) -> None:
         self.logger.info("Del")

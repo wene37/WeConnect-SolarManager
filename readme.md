@@ -19,6 +19,8 @@ Currently there's no package you can install easily. In future it's planed to ha
 9. Change needed configuration entries in config.txt (see [Needed configuration](#needed-configuration)).
 10. Install the service (see [readme.md](/service) in service folder).
 
+If you get error or warn messages in the log file when updating your cars data, please make sure you run latest version of `weconnect[Images]` package by running `pip3 install weconnect[Images] --upgrade`.
+
 # Documentation
 ## Configuration
 In the config.txt file you find different entries you can or have to change.
@@ -26,7 +28,8 @@ In the config.txt file you find different entries you can or have to change.
 ### Needed configuration
 |Section|Entry|Description|
 |---|---|---|
-|SolarEdge|ApiUrl|Add the API-Key for getting data from your SolarEdge installation. You can get this in the Admin area in your [SolarEdge-Monitoring-Plattform](https://monitoring.solaredge.com/)||
+|SolarEdge|ApiKey|Add the API-Key for getting data from your SolarEdge installation. You can get this in the Admin area in your [SolarEdge-Monitoring-Plattform](https://monitoring.solaredge.com/)|
+||LocationId|Add the Location-ID for getting data from your SolarEdge installation. You can get this in the Admin area in your [SolarEdge-Monitoring-Plattform](https://monitoring.solaredge.com/)|
 |WeConnect|Username|Your username you use for login in the WeConnect ID App|
 ||Password|Your password you use for login in the WeConnect ID App|
 |SolarManager|VIN|The vehicle identification number for the car you want to load with solar power. You find this in the WeConnect ID App in "My cars" view.|
@@ -38,7 +41,7 @@ In the config.txt file you find different entries you can or have to change.
 ||MinBatteryLoadToStartCharging|Minimum battery load that charging will be started. Before this SolarManager won't start charging your car.|
 ||MinPowerToGridToStartCharging|Minium power to grid that charging will be started. Below this SolarManager will only start charging if battery load is 100%.|
 ||MaxPowerFromGridToStopCharging|If your home uses more power SolarManager will stop charging your car. Value is negative because it's a power consumption.|
-||MinBatteryLoad|Minium battery load you want to have. If battery loads goes below this, SolarManager will stop charging your car.|
+||MinBatteryLoad|Minium battery load you want to have. If battery load goes below this, SolarManager will stop charging your car.|
 ||SimulationMode|You can enable simulation mode to only log everything without really start or stop charging your car.|
 ||VehicleNameSuffix|The suffix you need to add to your car's nickname (see below).|
 
@@ -48,7 +51,12 @@ As SolarManager can't know if you want to load your car with solar power only or
 The reason for this nickname suffix is because it's the easiest way you can enable or disable SolarManager from everywhere without having access to your SolarManager instance running at your home.
 
 ## Plug your car
-SolarManager needs a car in the Ready for Charging state. This means you have to plug your car to your wallbox and authorize the charging. Then stop it again to give control to SolarManager.
+SolarManager needs a car in the Ready for Charging state. This means you have to plug your car to your wallbox and authorize the charging.
+
+# Tested with
+- SolarEdge solar system with 12 kWh battery
+- Volkswagen ID.4 1st MAX
+- Volkswagen ID.Charger Connect
 
 # Local Deployment
 There's a docker container for running all the stuff in Python without need to install everything locally.
