@@ -4,3 +4,4 @@ src/logs/*
 dist/
 build/
 src/WeConnect_SolarManager.egg-info/
+*.user

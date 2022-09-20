@@ -6,6 +6,7 @@ import configparser
 
 from time import sleep
 from SolarManager import SolarManager
+from pathlib import Path
 
 def log_setup():
     
@@ -27,9 +28,16 @@ LOG.info("Starting service.")
 try:
 
     configFileName = "config.txt"
+    userConfigFileName = "config.txt.user"
+    userConfigFile = Path(userConfigFileName)
+
+    if userConfigFile.is_file():
+        LOG.info("Using user config file.")
+        configFileName = userConfigFileName
+    
     configParser = configparser.ConfigParser()
     configParser.read(configFileName)
-
+    
     sleepTimeSeconds = configParser.getint("SolarManager", "SolarCheckInterval")
     solarManager = SolarManager.SolarManager(configParser.get("WeConnect", "Username"), configParser.get("WeConnect", "Password"), configFileName)
 
