@@ -6,15 +6,15 @@ It calculates from the current solar power, load and battery charge level if you
 The SolarManager is written in Python and uses [WeConnect-python](https://github.com/tillsteinbach/WeConnect-python) for the connection to the vehicle (ID.3, ID.4 and so on) and [SolarEdge API](https://www.solaredge.com/sites/default/files/se_monitoring_api.pdf) for getting information about current solar power.
 
 # Installation
-Currently there's no package you can install easily. In future it's planed to have it as a package which installs everything itself. For the moment you can do the following to install it for example on a Raspberry Pi in headless mode.
+Do the following to install it for example on a Raspberry Pi in headless mode:
 
 1. Connect to your Raspberry Pi with a terminal console as user 'pi'.
 2. Run `sudo apt update`.
 3. Run `sudo apt full-upgrade`.
 4. Run `sudo apt install python3-pip`.
 5. Run `pip3 install WeConnect-SolarManager`.
-6. Change needed configuration entries in `/home/pi/.local/SolarManager/config.txt` (see [Needed configuration](#needed-configuration)).
-7. Install the service (see [readme.md](/service) in service folder).
+6. Set needed configuration entries in `/home/pi/.local/SolarManager/config.txt` (see [Needed configuration](#needed-configuration)).
+7. Run `xxx` to install the service.
 8. Check the logs at `/home/pi/.local/SolarManager/logs` if everything runs fine.
 
 # Update
