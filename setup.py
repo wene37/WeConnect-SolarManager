@@ -21,7 +21,7 @@ setup(
     author="Thomas Werner",
     author_email="thomas.werner@witro.ch",
     classifiers=[
-        "License :: OSI Approved :: MIT License",
+        "License :: OSI Approved :: MIT License"
     ],
     package_dir={"": "src"},
     packages=find_packages(where="src"),

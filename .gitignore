@@ -1,4 +1,6 @@
 src/logs/*
 !src/logs/.gitkeep
 **/__pycache__/*
-dist
+dist/
+build/
+src/WeConnect_SolarManager.egg-info/
