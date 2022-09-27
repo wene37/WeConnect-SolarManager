@@ -32,7 +32,7 @@ try:
     userConfigFile = Path(userConfigFileName)
 
     if userConfigFile.is_file():
-        LOG.info("Using user config file.")
+        LOG.info("Using user config file '" + userConfigFileName + "'.")
         configFileName = userConfigFileName
     
     configParser = configparser.ConfigParser()

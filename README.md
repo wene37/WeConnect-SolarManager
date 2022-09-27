@@ -12,14 +12,14 @@ Do the following to install it for example on a Raspberry Pi in headless mode:
 2. Run `sudo apt update`.
 3. Run `sudo apt full-upgrade`.
 4. Run `sudo apt install python3-pip`.
-5. Run `pip3 install WeConnect-SolarManager`.
+5. Run `pip install WeConnect-SolarManager`.
 6. Set needed configuration entries in `/home/pi/.local/SolarManager/config.txt` (see [Needed configuration](#needed-configuration)).
-7. Run `xxx` to install the service.
+7. Run `sudo python /home/pi/.local/SolarManager/init.py` to install and start the service. A backup of your config file will be created automatically (see [Update](#update))
 8. Check the logs at `/home/pi/.local/SolarManager/logs` if everything runs fine.
 
 # Update
-To install an updated version of WeConnect-SolarManager, just run `pip3 install WeConnect-SolarManager --upgrade`. After that you have to restart the service with `sudo systemctl restart SolarManager.service`.
-Please note that with an upgrade the `config.txt` will be overwritten. You can copy this to a file `config.txt.user`, which will be used then. In this case you have to care by yourself about new and changed settings.
+To install an updated version of WeConnect-SolarManager, just run `pip install WeConnect-SolarManager --upgrade`. After that you have to restart the service by running `sudo python /home/pi/.local/SolarManager/init.py` again.
+Please note that with an upgrade the `config.txt` will be overwritten. You can copy this to a file `config.txt.user`, which will be used then. But in this case you have to care about new and changed settings by yourself.
 
 # Documentation
 ## Configuration
