@@ -6,20 +6,20 @@ It calculates from the current solar power, load and battery charge level if you
 The SolarManager is written in Python and uses [WeConnect-python](https://github.com/tillsteinbach/WeConnect-python) for the connection to the vehicle (ID.3, ID.4 and so on) and [SolarEdge API](https://www.solaredge.com/sites/default/files/se_monitoring_api.pdf) for getting information about current solar power.
 
 # Installation
-Currently there's no package you can install easily. In future it's planed to have it as a package which installs everything itself. For the moment you can do the following to install it for example on a Raspberry Pi in headless mode.
+Do the following to install it for example on a Raspberry Pi in headless mode:
 
 1. Connect to your Raspberry Pi with a terminal console as user 'pi'.
 2. Run `sudo apt update`.
 3. Run `sudo apt full-upgrade`.
 4. Run `sudo apt install python3-pip`.
-5. Run `sudo apt-get install libopenjp2-7`.
-6. Run `pip3 install weconnect[Images]`.
-7. Connect to your Raspberry Pi with an sFTP window.
-8. Copy all files within [/src](/src) folder to '/home/pi/SolarManager'.
-9. Change needed configuration entries in config.txt (see [Needed configuration](#needed-configuration)).
-10. Install the service (see [readme.md](/service) in service folder).
+5. Run `pip install WeConnect-SolarManager`.
+6. Set needed configuration entries in `/home/pi/.local/SolarManager/config.txt` (see [Needed configuration](#needed-configuration)).
+7. Run `sudo python /home/pi/.local/SolarManager/init.py` to install and start the service. A backup of your config file will be created automatically (see [Update](#update))
+8. Check the logs at `/home/pi/.local/SolarManager/logs` if everything runs fine.
 
-If you get error or warn messages in the log file when updating your cars data, please make sure you run latest version of `weconnect[Images]` package by running `pip3 install weconnect[Images] --upgrade`.
+# Update
+To install an updated version of WeConnect-SolarManager, just run `pip install WeConnect-SolarManager --upgrade`. After that you have to restart the service by running `sudo python /home/pi/.local/SolarManager/init.py` again.
+Please note that with an upgrade the `config.txt` will be overwritten. You can copy this to a file `config.txt.user`, which will be used then. But in this case you have to care about new and changed settings by yourself.
 
 # Documentation
 ## Configuration
@@ -57,11 +57,3 @@ SolarManager needs a car in the Ready for Charging state. This means you have to
 - SolarEdge solar system with 12 kWh battery
 - Volkswagen ID.4 1st MAX
 - Volkswagen ID.Charger Connect
-
-# Local Deployment
-There's a docker container for running all the stuff in Python without need to install everything locally.
-To start docker, open a new PowerShell as Administrator and change to `docker` directory. Then run `docker compose up -d`. To stop it, run `docker compose down`.
-
-On first call it will build the image where the WeConnect-python will be installed. To force rebuild, just run `docker compose build --no-cache`.
-
-After the container started, run `docker exec -it solarmanager-app-1 bash` to connect to container's terminal. There you can run the SolarManager code with `python ./main.py`.
