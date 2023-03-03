@@ -1,2 +1,2 @@
 requests >= 2.27.1
-weconnect[Images] >= 0.48.0
+weconnect[Images] >= 0.54.2
