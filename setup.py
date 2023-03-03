@@ -8,7 +8,7 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 
 setup(
     name="WeConnect-SolarManager",
-    version="0.2.1",
+    version="0.2.2",
     description="With WeConnect-SolarManager you can automatically charge your Volkswagen ID car (e.g. ID.4) with solar electricity, even if your wallbox does not support this.",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -26,7 +26,7 @@ setup(
     python_requires=">=3.7, <4",
     install_requires=[
         'requests >= 2.27.1',
-        'weconnect[Images] >= 0.48.0'
+        'weconnect[Images] >= 0.54.2'
     ],
     project_urls={
         "Bug Reports": "https://github.com/wene37/WeConnect-SolarManager/issues",
