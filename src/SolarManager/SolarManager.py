@@ -83,7 +83,7 @@ class SolarManager:
         nickname = currentVehicleState.nickname.value
 
         if not nickname.lower().endswith(self.vehicleNameSuffix):
-            self.logger.info(f"SolarManager not enabled for this car - nickname suffix missing (current: {nickname}).")
+            self.logger.info(f"SolarManager not enabled for this car - nickname suffix '{self.vehicleNameSuffix}' missing (current nickname: {nickname}).")
             return
 
         if currentVehicleState.domains["charging"]["plugStatus"].plugConnectionState.value is not PlugStatus.PlugConnectionState.CONNECTED or currentVehicleState.domains["charging"]["plugStatus"].plugLockState.value is not PlugStatus.PlugLockState.LOCKED:

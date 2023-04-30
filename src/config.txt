@@ -5,16 +5,18 @@ MinPowerToGridToStartCharging=1
 MaxPowerFromGridToStopCharging=-0.5
 MinBatteryLoad=90
 SimulationMode=False
-VIN=VEHICLE-IDENTIFICATION-NUMBER
+VIN=
 VehicleNameSuffix=(SMC)
 RestrictedHoursBeforeSunset=2
 
 [SolarEdge]
-ApiUrl=https://monitoringapi.solaredge.com/site/2410315/currentPowerFlow.json?api_key=API-KEY
+ApiUrl=https://monitoringapi.solaredge.com/site/{{LOCATION_ID}}/currentPowerFlow.json?api_key={{API_KEY}}
+LocationId=
+ApiKey=
 
 [WeConnect]
-Username=USERNAME
-Password=PASSWORD
+Username=
+Password=
 
 [GeoLocation]
 GeoLocationApi=https://ipinfo.io/json
