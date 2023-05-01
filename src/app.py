@@ -1,6 +1,11 @@
 import os
 from flask import Flask, render_template
 
+from Helper import Helper
+
+configParser = Helper.loadConfig()
+port = configParser.getint("WebApp", "Port")
+
 templateDir = os.path.join(os.path.dirname(__file__), "templates")
 staticDir = os.path.join(os.path.dirname(__file__), "static")
 app = Flask("WeConnect-SolarManager", template_folder=templateDir, static_folder=staticDir)
@@ -10,4 +15,4 @@ def index():
     return render_template('index.html')
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, port=port, host='0.0.0.0')

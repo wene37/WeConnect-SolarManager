@@ -2,6 +2,7 @@ import logging
 import configparser
 import json
 
+from Helper import Helper
 from SolarEdge import SolarEdge
 from SolarManager.Elements.enums import ChargingState
 
@@ -16,14 +17,12 @@ class SolarManager:
     def __init__(
         self,
         username: str,
-        password: str,
-        configFileName: str
+        password: str
     ) -> None:
 
         self.logger = logging.getLogger("SolarManager")
 
-        configParser = configparser.ConfigParser()
-        configParser.read(configFileName)
+        configParser = Helper.loadConfig()
 
         self.minBatteryLoadToStartCharging = configParser.getfloat("SolarManager", "MinBatteryLoadToStartCharging")
         self.minPowerToGridToStartCharging = configParser.getfloat("SolarManager", "MinPowerToGridToStartCharging")
@@ -38,7 +37,7 @@ class SolarManager:
 
         self.logger.info(f"Simulation mode: {self.simulationMode}")
 
-        self.solarEdge = SolarEdge.SolarEdge(configFileName)
+        self.solarEdge = SolarEdge.SolarEdge()
 
         self.logger.info("Initialize WeConnect")
         self.weConnect = weconnect.WeConnect(username=username, password=password, updateAfterLogin=False, loginOnInit=False)

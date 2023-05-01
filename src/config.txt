@@ -16,3 +16,6 @@ ApiKey=
 [WeConnect]
 Username=
 Password=
+
+[WebApp]
+Port=5001
