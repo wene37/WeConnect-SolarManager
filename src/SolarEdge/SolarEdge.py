@@ -1,6 +1,5 @@
 import logging
 import requests
-import configparser
 import json
 import urllib.parse
 

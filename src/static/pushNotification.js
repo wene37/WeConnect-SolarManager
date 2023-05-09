@@ -1,5 +1,4 @@
-﻿// ReSharper disable UseOfImplicitGlobalInFunctionScope
-if ("serviceWorker" in navigator) {
+﻿if ("serviceWorker" in navigator) {
 
     window.addEventListener("load", () => {
 
@@ -8,15 +7,14 @@ if ("serviceWorker" in navigator) {
 
                 var mainApp = $("#mainApp")[0];
                 var applicationServerKey = mainApp.getAttribute("data-applicationServerKey");
-                var applicationId = mainApp.getAttribute("data-application-id");
 
                 if (applicationServerKey === "") {
-                    //return;
+                    return;
                 }
 
                 if (Notification.permission === "granted") {
 
-                    getSubscription(reg, applicationServerKey, applicationId);
+                    getSubscription(reg, applicationServerKey);
                 }
                 else if (Notification.permission === "blocked" || Notification.permission === "denied") {
                     // do nothing
@@ -24,25 +22,25 @@ if ("serviceWorker" in navigator) {
                 else {
 
                     $("#GiveAccess").show();
-                    $("#PromptForAccessBtn").click(() => requestNotificationAccess(reg, applicationServerKey, applicationId));
+                    $("#PromptForAccessBtn").click(() => requestNotificationAccess(reg, applicationServerKey));
                 }
             });
     });
 }
 
-function requestNotificationAccess(reg, applicationServerKey, applicationId) {
+function requestNotificationAccess(reg, applicationServerKey) {
 
     Notification.requestPermission(function (status) {
 
         $("#GiveAccess").hide();
 
         if (status === "granted") {
-            getSubscription(reg, applicationServerKey, applicationId);
+            getSubscription(reg, applicationServerKey);
         }
     });
 }
 
-function getSubscription(reg, applicationServerKey, applicationId) {
+function getSubscription(reg, applicationServerKey) {
 
     reg.pushManager.getSubscription().then(function (sub) {
 
@@ -52,21 +50,21 @@ function getSubscription(reg, applicationServerKey, applicationId) {
                 userVisibleOnly: true,
                 applicationServerKey: applicationServerKey
             }).then(function (sub) {
-                sendSubscription(sub, applicationId);
+                sendSubscription(sub);
             }).catch(function (e) {
                 console.error("Unable to subscribe to push.", e);
             });
         } else {
-            sendSubscription(sub, applicationId);
+            sendSubscription(sub);
         }
     });
 }
 
-function sendSubscription(sub, applicationId) {
+function sendSubscription(sub) {
 
     const pushNotificationConfig = { endpoint: sub.endpoint, p256dh: arrayBufferToBase64(sub.getKey("p256dh")), auth: arrayBufferToBase64(sub.getKey("auth")) };
 
-    axios.post(`/api/pushnotification?applicationId=${applicationId}`, pushNotificationConfig)
+    axios.post(`/api/pushnotification`, pushNotificationConfig)
     .then(res => {
         console.log(res);
     })

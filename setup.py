@@ -27,7 +27,8 @@ setup(
     install_requires=[
         'requests >= 2.27.1',
         'weconnect[Images] >= 0.54.2',
-        'flask >= 2.3.1'
+        'flask >= 2.3.1',
+        'pywebpush >= 1.14.0'
     ],
     project_urls={
         "Bug Reports": "https://github.com/wene37/WeConnect-SolarManager/issues",

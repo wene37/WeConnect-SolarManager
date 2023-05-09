@@ -1,6 +1,4 @@
-﻿// ReSharper disable UseOfImplicitGlobalInFunctionScope
-// ReSharper disable Html.EventNotResolved
-self.addEventListener("push", function (e) {
+﻿self.addEventListener("push", function (e) {
 
     if (!e.data) {
 
@@ -12,7 +10,7 @@ self.addEventListener("push", function (e) {
     const options = {
         body: payload.message,
         tag: payload.tag,
-        icon: "/images/favicon/icon-512.png",
+        icon: "/static/images/favicon/icon-512.png",
         vibrate: [100, 50, 100],
         timestamp: Date.parse(payload.dateTime)/*,
         actions: [
@@ -28,7 +26,7 @@ self.addEventListener("push", function (e) {
     };
 
     e.waitUntil(
-        self.registration.showNotification("SensorHome - " + payload.title, options)
+        self.registration.showNotification("WeConnect-SolarManager - " + payload.title, options)
     );
 });
 
@@ -41,7 +39,7 @@ self.addEventListener("notificationclick", function (e) {
         notification.close();
     } else {
         // Some actions
-        clients.openWindow("https://sensorhome.witro.ch");
+        clients.openWindow("http://127.0.0.1:" + port);
         notification.close();
     }
 });

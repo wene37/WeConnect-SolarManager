@@ -1,5 +1,4 @@
 import logging
-import configparser
 import json
 
 from Helper import Helper
@@ -170,11 +169,15 @@ class SolarManager:
 
         if newState == ChargingState.On:
             self.logger.info("Start charging")
+            Helper.sendPushNotification("Info", "Start charging")
+
             if not self.simulationMode:
                 vehicle.controls.chargingControl.value = ControlOperation.START
 
         else:
             self.logger.info("Stop charging")
+            Helper.sendPushNotification("Info", "Stop charging")
+
             if not self.simulationMode:
                 vehicle.controls.chargingControl.value = ControlOperation.STOP
 

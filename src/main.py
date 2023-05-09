@@ -31,7 +31,8 @@ LOG.info("Starting service.")
 try:
 
     configParser = Helper.loadConfig()
-    
+    Helper.sendPushNotification("Info", "Starting service")
+
     sleepTimeSeconds = configParser.getint("SolarManager", "SolarCheckInterval")
     solarManager = SolarManager.SolarManager(configParser.get("WeConnect", "Username"), configParser.get("WeConnect", "Password"))
 
@@ -44,4 +45,5 @@ try:
 
 except Exception as e:
     LOG.error(f"An error occured while running the service: {e}", exc_info=True)
+    Helper.sendPushNotification("Error", "An error occured while running the service")
     raise e
