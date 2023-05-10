@@ -1,10 +1,13 @@
 import json
 import os
+import subprocess
+
 from flask import Flask, render_template, request
 
 from Helper import Helper
 
 configParser = Helper.loadConfig()
+ip = subprocess.call("hostname -I")
 port = configParser.getint("WebApp", "Port")
 publicKey = configParser.get("WebApp", "WebPushPublicKey")
 
@@ -40,7 +43,7 @@ def pushNotification():
 
 @app.route('/')
 def index():
-    return render_template('index.html', PublicKey=publicKey, Port=port, LogOutput=getLogs())
+    return render_template('index.html', PublicKey=publicKey, IP=ip, Port=port, LogOutput=getLogs())
 
 if __name__ == '__main__':
     app.run(debug=True, port=port, host='0.0.0.0')

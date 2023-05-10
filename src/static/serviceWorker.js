@@ -39,7 +39,7 @@ self.addEventListener("notificationclick", function (e) {
         notification.close();
     } else {
         // Some actions
-        clients.openWindow("http://127.0.0.1:" + port);
+        clients.openWindow("http://" + ip + ":" + port);
         notification.close();
     }
 });
