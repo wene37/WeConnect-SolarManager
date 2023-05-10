@@ -7,26 +7,22 @@ import os
 import stat
 from datetime import datetime
 
-def initService(configFilePath: string, currentDirectoryPath: string):
-    print("Init service.")
+def initService(serviceName: string, serviceStartFile: string, currentDirectoryPath: string):
+    print("Init '" + serviceName + "' service.")
 
-    print("Create a copy of current config file.")
-    os.system("cp -rf " + configFilePath + " " + configFilePath + "-" + datetime.today().strftime('%Y%m%d'))
-
-    serviceFilePath = "/lib/systemd/system/SolarManager.service"
+    serviceFilePath = "/lib/systemd/system/" + serviceName + ".service"
 
     if os.path.exists(serviceFilePath):
-        print("Stopping current service.")
-        os.system("sudo systemctl stop SolarManager.service")
+        print("Stopping existing service.")
+        os.system("sudo systemctl stop " + serviceName + ".service")
 
-        print("Disabling current service.")
-        os.system("sudo systemctl disable SolarManager.service")
+        print("Disabling existing service.")
+        os.system("sudo systemctl disable " + serviceName + ".service")
 
         print("Delete existing service file at '" + serviceFilePath + "'.")
         os.remove(serviceFilePath)
 
-    serviceFileContent = "[Unit]\nDescription=SolarManager\nAfter=multi-user.target\nStartLimitIntervalSec=120s\nStartLimitBurst=50\n\n[Service]\nType=simple\nWorkingDirectory={{WORKING_DIRECTORY}}\nUser=pi\nExecStart=/usr/bin/python ./main.py\nRestart=on-failure\nRestartSec=120s\n\n[Install]\nWantedBy=multi-user.target"
-    serviceFileContent = serviceFileContent.replace("{{WORKING_DIRECTORY}}", currentDirectoryPath)
+    serviceFileContent = "[Unit]\nDescription=" + serviceName + "\nAfter=multi-user.target\nStartLimitIntervalSec=120s\nStartLimitBurst=50\n\n[Service]\nType=simple\nWorkingDirectory=" + currentDirectoryPath + "\nUser=pi\nExecStart=/usr/bin/python ./" + serviceStartFile + "\nRestart=on-failure\nRestartSec=120s\n\n[Install]\nWantedBy=multi-user.target"
     
     with open(serviceFilePath, 'w') as f:
         print("Writing new service file at '" + serviceFilePath + "'.")
@@ -34,16 +30,28 @@ def initService(configFilePath: string, currentDirectoryPath: string):
 
     os.chmod(serviceFilePath, 644)
 
-    mainFilePath = currentDirectoryPath + "/main.py"
+    mainFilePath = currentDirectoryPath + "/" + serviceStartFile
     st = os.stat(mainFilePath)
     os.chmod(mainFilePath, st.st_mode | stat.S_IEXEC)
 
     print("Register and start service.")
     os.system("sudo systemctl daemon-reload")
-    os.system("sudo systemctl enable SolarManager.service")
-    os.system("sudo systemctl start SolarManager.service")
+    os.system("sudo systemctl enable " + serviceName + ".service")
+    os.system("sudo systemctl start " + serviceName + ".service")
 
-    print("Init done. Please check the log files for errors.")
+    print("Init of '" + serviceName + "' done.")
+
+def initSolarManagerService(configFilePath: string, currentDirectoryPath: string):
+
+    print("Create a copy of current config file.")
+    os.system("cp -rf " + configFilePath + " " + configFilePath + "-" + datetime.today().strftime('%Y%m%d'))
+
+    initService("SolaraManager", "main.py", currentDirectoryPath)
+
+def initWebAppService(currentDirectoryPath: string, port: int):
+
+    initService("SolaraManagerWebApp", "app.py", currentDirectoryPath)
+    print("Web app is running on this host on port " + port + ".")
 
 try:
 
@@ -70,7 +78,8 @@ try:
         print("Please set all needed configurations in config file and run this script again.")
         exit
     else:
-        initService(str(configFilePath), str(here))
+        initSolarManagerService(str(configFilePath), str(here))
+        initWebAppService(str(here), configParser.getint("WebApp", "Port"))
 
 except Exception as e:
     raise e
