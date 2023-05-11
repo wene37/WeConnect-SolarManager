@@ -51,7 +51,7 @@ def initSolarManagerService(configFilePath: string, currentDirectoryPath: string
 def initWebAppService(currentDirectoryPath: string, port: int):
 
     initService("SolaraManagerWebApp", "app.py", currentDirectoryPath)
-    print("Web app is running on this host on port " + port + ".")
+    print("Web app is running on this host on port " + str(port) + ".")
 
 try:
 

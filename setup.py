@@ -1,6 +1,4 @@
-# Always prefer setuptools over distutils
 from setuptools import setup, find_packages
-from setuptools.command.install import install
 import pathlib
 
 here = pathlib.Path(__file__).parent.resolve()
@@ -8,7 +6,7 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 
 setup(
     name="WeConnect-SolarManager",
-    version="0.3.0rc1",
+    version="0.3.0rc3",
     description="With WeConnect-SolarManager you can automatically charge your Volkswagen ID car (e.g. ID.4) with solar electricity, even if your wallbox does not support this.",
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -29,8 +27,9 @@ setup(
     python_requires=">=3.7, <4",
     install_requires=[
         'requests >= 2.27.1',
-        'weconnect[Images] >= 0.54.2',
+        'weconnect[Images] >= 0.55.0',
         'flask >= 2.3.1',
+        'cryptography==3.3.2',
         'pywebpush >= 1.14.0'
     ],
     project_urls={
