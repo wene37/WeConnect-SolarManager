@@ -1,9 +1,11 @@
 import json
 import os
 import configparser
+import logging
+import logging.handlers
 
 from pathlib import Path
-from pywebpush import webpush, WebPushException
+from pywebpush import webpush
 from datetime import datetime
 
 class Helper:
@@ -59,16 +61,20 @@ class Helper:
         
         for device in pushNotifications["devices"]:
 
-            subscription_information = {
-                "endpoint": device["endpoint"],
-                "keys": { "auth": device["auth"], "p256dh": device["p256dh"] }
-            }
+            try:
+                subscription_information = {
+                    "endpoint": device["endpoint"],
+                    "keys": { "auth": device["auth"], "p256dh": device["p256dh"] }
+                }
 
-            data = json.dumps({"title": title, "message": message, "tag": "", "dateTime": datetime.utcnow()}, default=str)
+                data = json.dumps({"title": title, "message": message, "tag": "", "dateTime": datetime.utcnow()}, default=str)
 
-            webpush(
-                subscription_info=subscription_information,
-                data=data,
-                vapid_private_key=configParser.get("WebApp", "WebPushPrivateKey"),
-                vapid_claims={"sub": configParser.get("WebApp", "WebPushSubject")}
-            )
+                webpush(
+                    subscription_info=subscription_information,
+                    data=data,
+                    vapid_private_key=configParser.get("WebApp", "WebPushPrivateKey"),
+                    vapid_claims={"sub": configParser.get("WebApp", "WebPushSubject")}
+                )
+            except Exception as e:
+                LOG = logging.getLogger("SolarManager.Helper")
+                LOG.error("An error occured while sending push notification: " + str(e))
