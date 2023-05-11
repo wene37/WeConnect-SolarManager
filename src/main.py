@@ -3,7 +3,6 @@
 import os
 import logging
 import logging.handlers
-import configparser
 
 from Helper import Helper
 from time import sleep
