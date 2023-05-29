@@ -1,19 +1,18 @@
 import logging
 import requests
-import configparser
 import json
 import urllib.parse
 
+from Helper import Helper
+
 class SolarEdge:
     def __init__(
-        self,
-        configFileName: str
+        self
     ) -> None:
 
         self.logger = logging.getLogger("SolarEdge")
 
-        configParser = configparser.ConfigParser()
-        configParser.read(configFileName)
+        configParser = Helper.loadConfig()
 
         apiKey = configParser.get("SolarEdge", "ApiKey")
         locationId = configParser.get("SolarEdge", "LocationId")

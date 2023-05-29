@@ -22,3 +22,9 @@ Port=8080
 [WeConnect]
 Username=
 Password=
+
+[WebApp]
+Port=5001
+WebPushSubject=mailto: <support@witro.ch>
+WebPushPublicKey=BIp6-DDjAqtOLvwyK3EOdNdj7RVFsIlWMqAGTjSTI5Wj9sCwmTirbc7QjbMrtzoJTeVRu4XtHBr6kyPHoGhmzf0
+WebPushPrivateKey=luQ-M30MYdVhVEhzdNFFBPwhf5ZwQMed4Iw1svej_qg

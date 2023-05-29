@@ -1,2 +1,5 @@
 requests >= 2.27.1
-weconnect[Images] >= 0.54.2
+weconnect[Images] >= 0.55.0
+flask >= 2.3.1
+cryptography == 3.3.2
+pywebpush >= 1.14.0
