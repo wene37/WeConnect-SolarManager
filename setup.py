@@ -6,7 +6,7 @@ long_description = (here / "README.md").read_text(encoding="utf-8")
 
 setup(
     name="WeConnect-SolarManager",
-    version="0.3.0rc4",
+    version="0.3.0rc6",
     description="With WeConnect-SolarManager you can automatically charge your Volkswagen ID car (e.g. ID.4) with solar electricity, even if your wallbox does not support this.",
     long_description=long_description,
     long_description_content_type="text/markdown",

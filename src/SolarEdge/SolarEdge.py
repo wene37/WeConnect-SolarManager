@@ -19,6 +19,7 @@ class SolarEdge:
         apiUrl = configParser.get("SolarEdge", "ApiUrl")
 
         self.apiUrl = apiUrl.replace("{{LOCATION_ID}}", urllib.parse.quote(locationId, safe='')).replace("{{API_KEY}}", urllib.parse.quote(apiKey, safe=''))
+        self.simulationMode = configParser.getboolean("SolarManager", "SimulationMode")
 
     def __del__(self) -> None:
         self.logger.info("Del")
@@ -26,8 +27,12 @@ class SolarEdge:
     def get_current_state(self) -> None:
         self.logger.info("Get current state")
         
-        response = requests.get(self.apiUrl)
-        jsonString = response.text
+        if self.simulationMode:
+            self.logger.info("Using simulation data")
+            jsonString = Helper.readFile("Data/SolarEdge.json")
+        else:
+            response = requests.get(self.apiUrl)
+            jsonString = response.text
         
         self.logger.debug(f"JSON: {jsonString}")
 

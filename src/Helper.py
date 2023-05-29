@@ -15,7 +15,7 @@ class Helper:
         filePath = Path(os.path.join(os.path.dirname(__file__), "logs/SolarManager.log"))
 
         if filePath.is_file():
-            with open(filePath) as file:
+            with open(filePath, "r") as file:
                 return [line.rstrip() for line in file]
 
         return []
@@ -36,12 +36,22 @@ class Helper:
         return configParser
 
     @staticmethod
+    def readFile(relFilePath: str) -> str:
+        filePath = Path(os.path.join(os.path.dirname(__file__), relFilePath))
+
+        if filePath.is_file():
+            with open(filePath, "r") as file:
+                return file.read()
+
+        return ""
+
+    @staticmethod
     def loadPushNotifications() -> json:
         fileName = "pushNotifications.json"
         filePath = Path(os.path.join(os.path.dirname(__file__), fileName))
 
         if filePath.is_file():
-            with open(filePath) as json_file:
+            with open(filePath, "r") as json_file:
                 return json.load(json_file)
 
         return json.loads('{"devices":[]}')

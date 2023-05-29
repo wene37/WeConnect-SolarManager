@@ -7,11 +7,17 @@ MinBatteryLoad=90
 SimulationMode=False
 VIN=
 VehicleNameSuffix=(SMC)
+DataSource=SolarEdge
 
 [SolarEdge]
 ApiUrl=https://monitoringapi.solaredge.com/site/{{LOCATION_ID}}/currentPowerFlow.json?api_key={{API_KEY}}
 LocationId=
 ApiKey=
+
+[Sonnen]
+ApiUrl=http://{{IP}}:{{PORT}}/api/v1/status
+IP=
+Port=8080
 
 [WeConnect]
 Username=

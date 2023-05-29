@@ -3,6 +3,7 @@ import json
 
 from Helper import Helper
 from SolarEdge import SolarEdge
+from Sonnen import Sonnen
 from SolarManager.Elements.enums import ChargingState
 
 from weconnect import weconnect, addressable
@@ -35,8 +36,18 @@ class SolarManager:
         self.chargingChangeRequested = False
 
         self.logger.info(f"Simulation mode: {self.simulationMode}")
+        dataSource = configParser.get("SolarManager", "DataSource")
 
-        self.solarEdge = SolarEdge.SolarEdge()
+        if dataSource == "Sonnen":
+            self.logger.info("Using 'Sonnen' as data source.")
+            self.dataSource = Sonnen.Sonnen()
+        elif dataSource == "SolarEdge":
+            self.logger.info("Using 'SolarEdge' as data source.")
+            self.dataSource = SolarEdge.SolarEdge()
+        else:
+            self.logger.error("The data source '{{DATA_SOURCE}}' does not exist. Set correct value in property 'DataSource' in the config file and restart the service.".replace("{{DATA_SOURCE}}", dataSource))
+            self.dataSource = None
+            return
 
         self.logger.info("Initialize WeConnect")
         self.weConnect = weconnect.WeConnect(username=username, password=password, updateAfterLogin=False, loginOnInit=False)
@@ -74,6 +85,10 @@ class SolarManager:
     def run(self) -> None:
         self.logger.info("Run")
         
+        if self.dataSource == None:
+            self.logger.warn("The data source is not initialized.")
+            return
+
         currentVehicleState = self.updateVehicle()
         nickname = currentVehicleState.nickname.value
 
@@ -85,7 +100,7 @@ class SolarManager:
             self.logger.info("Vehicle is not connected to or not locked at the plug.")
             return
 
-        currentSolarState = self.solarEdge.get_current_state()
+        currentSolarState = self.dataSource.get_current_state()
         self.logger.info(f"Current solar state: {json.dumps(currentSolarState)}")
 
         if self.isCharging:

@@ -1,9 +1,9 @@
 # Common
-With SolarManager you can automatically charge your Volkswagen ID car (e.g. ID.4) with solar electricity, even if your wallbox does not support this (like ID. Charger does not currently). There's an adapter for SolarEdge included but may be extended with another solar system easily.
+With SolarManager you can automatically charge your Volkswagen ID car (e.g. ID.4) with solar electricity, even if your wallbox does not support this or is not that good in this. There are adapters for SolarEdge and Sonnen included but may be extended with another solar system easily.
 
-It calculates from the current solar power, load and battery charge level if your car can be charged or not. If so it starts the charging process and if the sun goes down or you use more power for other things, it stops automatically.
+It calculates from the current solar power, load and battery charge level if your car can be charged or not. If so it starts the charging process and if the sun goes down or you use more power for other things, it stops automatically. With the integrated web app you can see the logs of the current day and receive push notifications for different events.
 
-The SolarManager is written in Python and uses [WeConnect-python](https://github.com/tillsteinbach/WeConnect-python) for the connection to the vehicle (ID.3, ID.4 and so on) and [SolarEdge API](https://www.solaredge.com/sites/default/files/se_monitoring_api.pdf) for getting information about current solar power.
+The SolarManager is written in Python and uses [WeConnect-python](https://github.com/tillsteinbach/WeConnect-python) for the connection to the vehicle (ID.3, ID.4 and so on) and [SolarEdge API](https://www.solaredge.com/sites/default/files/se_monitoring_api.pdf) or Sonnen API for getting information about current solar power.
 
 # Installation
 Do the following to install it for example on a Raspberry Pi in headless mode:
@@ -15,7 +15,7 @@ Do the following to install it for example on a Raspberry Pi in headless mode:
 5. Run `pip install WeConnect-SolarManager`.
 6. Set needed configuration entries in `/home/pi/.local/SolarManager/config.txt` (see [Needed configuration](#needed-configuration)).
 7. Run `sudo python /home/pi/.local/SolarManager/init.py` to install and start the service. A backup of your config file will be created automatically (see [Update](#update))
-8. Check the logs at `/home/pi/.local/SolarManager/logs` if everything runs fine.
+8. Open a browser and connect to your Raspberry Pi's IP on the configured port to check the logs at `/home/pi/.local/SolarManager/logs` if everything runs fine and enable push notifications.
 
 # Update
 To install an updated version of WeConnect-SolarManager, just run `pip install WeConnect-SolarManager --upgrade`. After that you have to restart the service by running `sudo python /home/pi/.local/SolarManager/init.py` again.
@@ -28,11 +28,14 @@ In the config.txt file you find different entries you can or have to change.
 ### Needed configuration
 |Section|Entry|Description|
 |---|---|---|
+|SolarManager|VIN|The vehicle identification number for the car you want to load with solar power. You find this in the WeConnect ID App in "My cars" view.|
+||DataSource|The data source you want to read solar data from. Currently there are data sources for "SolarEdge" and "Sonnen" available.|
 |SolarEdge|ApiKey|Add the API-Key for getting data from your SolarEdge installation. You can get this in the Admin area in your [SolarEdge-Monitoring-Plattform](https://monitoring.solaredge.com/)|
 ||LocationId|Add the Location-ID for getting data from your SolarEdge installation. You can get this in the Admin area in your [SolarEdge-Monitoring-Plattform](https://monitoring.solaredge.com/)|
+|Sonnen|IP|The IP address where your Sonnen API is running.|
+||Port|The port where your Sonnen API is running.|
 |WeConnect|Username|Your username you use for login in the WeConnect ID App|
 ||Password|Your password you use for login in the WeConnect ID App|
-|SolarManager|VIN|The vehicle identification number for the car you want to load with solar power. You find this in the WeConnect ID App in "My cars" view.|
 
 ### Optional configuration
 |Section|Entry|Description|
@@ -61,3 +64,6 @@ SolarManager needs a car in the Ready for Charging state. This means you have to
 - SolarEdge solar system with 12 kWh battery
 - Volkswagen ID.4 1st MAX
 - Volkswagen ID.Charger Connect
+
+# Known Issues
+- Push Notifications require a https connection with a valid SSL certificate. This is not possible for IP addresses and therefore the push notifications are limited to some browsers (e.g. Firefox).
