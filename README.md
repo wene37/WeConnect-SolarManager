@@ -44,6 +44,10 @@ In the config.txt file you find different entries you can or have to change.
 ||MinBatteryLoad|Minium battery load you want to have. If battery load goes below this, SolarManager will stop charging your car.|
 ||SimulationMode|You can enable simulation mode to only log everything without really start or stop charging your car.|
 ||VehicleNameSuffix|The suffix you need to add to your car's nickname (see below).|
+|WebApp|Port|Port for the web app.|
+||WebPushSubject|VAPID setting for push notifications.|
+||WebPushPublicKey|VAPID setting for push notifications.|
+||WebPushPrivateKey|VAPID setting for push notifications.|
 
 ## Enable/Disable SolarManager
 As SolarManager can't know if you want to load your car with solar power only or just load it because you need a full battery, there's a switch you can use right from your WeConnect ID App. If you want SolarManager to be active for your car, please extend your car's nickname in the app with the suffix `(SMC)` (= SolarManager Control). If you want to disable SolarManager for your car, just remove the suffix again.
