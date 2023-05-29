@@ -41,10 +41,10 @@ class SolarManager:
         match dataSource:
             case "Sonnen":
                 self.logger.info("Using 'Sonnen' as data source.")
-                self.dataSource = Sonnen.Sonnen(configFileName)
+                self.dataSource = Sonnen.Sonnen()
             case "SolarEdge":
                 self.logger.info("Using 'SolarEdge' as data source.")
-                self.dataSource = SolarEdge.SolarEdge(configFileName)
+                self.dataSource = SolarEdge.SolarEdge()
             case _:
                 self.logger.error("The data source '{{DATA_SOURCE}}' does not exist. Set correct value in property 'DataSource' in the config file and restart the service.".replace("{{DATA_SOURCE}}", dataSource))
                 self.dataSource = None
