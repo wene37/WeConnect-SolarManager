@@ -38,17 +38,16 @@ class SolarManager:
         self.logger.info(f"Simulation mode: {self.simulationMode}")
         dataSource = configParser.get("SolarManager", "DataSource")
 
-        match dataSource:
-            case "Sonnen":
-                self.logger.info("Using 'Sonnen' as data source.")
-                self.dataSource = Sonnen.Sonnen()
-            case "SolarEdge":
-                self.logger.info("Using 'SolarEdge' as data source.")
-                self.dataSource = SolarEdge.SolarEdge()
-            case _:
-                self.logger.error("The data source '{{DATA_SOURCE}}' does not exist. Set correct value in property 'DataSource' in the config file and restart the service.".replace("{{DATA_SOURCE}}", dataSource))
-                self.dataSource = None
-                return
+        if dataSource == "Sonnen":
+            self.logger.info("Using 'Sonnen' as data source.")
+            self.dataSource = Sonnen.Sonnen()
+        elif dataSource == "SolarEdge":
+            self.logger.info("Using 'SolarEdge' as data source.")
+            self.dataSource = SolarEdge.SolarEdge()
+        else:
+            self.logger.error("The data source '{{DATA_SOURCE}}' does not exist. Set correct value in property 'DataSource' in the config file and restart the service.".replace("{{DATA_SOURCE}}", dataSource))
+            self.dataSource = None
+            return
 
         self.logger.info("Initialize WeConnect")
         self.weConnect = weconnect.WeConnect(username=username, password=password, updateAfterLogin=False, loginOnInit=False)
