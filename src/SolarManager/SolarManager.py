@@ -139,6 +139,7 @@ class SolarManager:
 
         if loadToGridPower > self.minPowerToGridToStartCharging or batteryChargeLevel == 100:
             self.logger.info(f"Load to grid > {self.minPowerToGridToStartCharging} (current: {loadToGridPower}) or battery charge level is 100 -> start charging")
+            Helper.sendPushNotification("Info", "Start charging")
             self.charging(vehicle, ChargingState.On)
             return
 
@@ -147,16 +148,19 @@ class SolarManager:
         
         if batteryChargeLevel < self.minBatteryLoad:
             self.logger.info(f"Battery charge level < {self.minBatteryLoad} (current: {batteryChargeLevel}) -> stop charging")
+            Helper.sendPushNotification("Info", "Stop charging because of battery charge level.")
             self.charging(vehicle, ChargingState.Off)
             return
 
         if loadToGridPower < self.maxPowerFromGridToStopCharging:
             self.logger.info(f"Load to grid < {self.maxPowerFromGridToStopCharging} (current: {loadToGridPower}) -> stop charging")
+            Helper.sendPushNotification("Info", "Stop charging because power from grid.")
             self.charging(vehicle, ChargingState.Off)
             return
 
         if vehicle.domains["charging"]["batteryStatus"].currentSOC_pct.value == 100:
             self.logger.info("Current SoC is 100 -> stop charging")
+            Helper.sendPushNotification("Info", "Stop charging because SoC is 100.")
             self.charging(vehicle, ChargingState.Off)
             return
 

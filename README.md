@@ -15,7 +15,7 @@ Do the following to install it for example on a Raspberry Pi in headless mode:
 5. Run `pip install WeConnect-SolarManager`.
 6. Set needed configuration entries in `/home/pi/.local/SolarManager/config.txt` (see [Needed configuration](#needed-configuration)).
 7. Run `sudo python /home/pi/.local/SolarManager/init.py` to install and start the service. A backup of your config file will be created automatically (see [Update](#update))
-8. Open a browser and connect to your Raspberry Pi's IP on the configured port to check the logs at `/home/pi/.local/SolarManager/logs` if everything runs fine and enable push notifications.
+8. Open a browser and connect to your Raspberry Pi's IP on the configured port (e.g. https://192.168.0.3:5001) to check the logs at `/home/pi/.local/SolarManager/logs` if everything runs fine.
 
 # Update
 To install an updated version of WeConnect-SolarManager, just run `pip install WeConnect-SolarManager --upgrade`. After that you have to restart the service by running `sudo python /home/pi/.local/SolarManager/init.py` again.
@@ -60,10 +60,10 @@ The reason for this nickname suffix is because it's the easiest way you can enab
 ## Plug your car
 SolarManager needs a car in the Ready for Charging state. This means you have to plug your car to your wallbox and authorize the charging.
 
+## Web App
+In the web app you currently see the today's log entries and you can enable push notifications as well. Please note, that push notifications do not work in Edge/Chrome, as there is no valid SSL cert for the web app. Push notifications are tested on Firefox (Windows) and iOS (added to home screen from Safari).
+
 # Tested with
 - SolarEdge solar system with 12 kWh battery
 - Volkswagen ID.4 1st MAX
 - Volkswagen ID.Charger Connect
-
-# Known Issues
-- Push Notifications require a https connection with a valid SSL certificate. This is not possible for IP addresses and therefore the push notifications are limited to some browsers (e.g. Firefox).

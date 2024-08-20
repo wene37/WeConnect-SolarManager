@@ -39,10 +39,10 @@ try:
         
         solarManager.run()
 
-        LOG.info(f"Sleeping for {sleepTimeSeconds} seconds")
+        LOG.info(f"Sleeping for {sleepTimeSeconds} seconds.")
         sleep(sleepTimeSeconds)
 
 except Exception as e:
     LOG.error(f"An error occured while running the service: {e}", exc_info=True)
-    Helper.sendPushNotification("Error", "An error occured while running the service")
+    Helper.sendPushNotification("Error", "An error occured while running the service.")
     raise e
