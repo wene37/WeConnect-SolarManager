@@ -1,8 +1,9 @@
 import logging
-import configparser
 import json
 
+from Helper import Helper
 from SolarEdge import SolarEdge
+from Sonnen import Sonnen
 from SolarManager.Elements.enums import ChargingState
 
 from weconnect import weconnect, addressable
@@ -16,14 +17,12 @@ class SolarManager:
     def __init__(
         self,
         username: str,
-        password: str,
-        configFileName: str
+        password: str
     ) -> None:
 
         self.logger = logging.getLogger("SolarManager")
 
-        configParser = configparser.ConfigParser()
-        configParser.read(configFileName)
+        configParser = Helper.loadConfig()
 
         self.minBatteryLoadToStartCharging = configParser.getfloat("SolarManager", "MinBatteryLoadToStartCharging")
         self.minPowerToGridToStartCharging = configParser.getfloat("SolarManager", "MinPowerToGridToStartCharging")
@@ -37,8 +36,18 @@ class SolarManager:
         self.chargingChangeRequested = False
 
         self.logger.info(f"Simulation mode: {self.simulationMode}")
+        dataSource = configParser.get("SolarManager", "DataSource")
 
-        self.solarEdge = SolarEdge.SolarEdge(configFileName)
+        if dataSource == "Sonnen":
+            self.logger.info("Using 'Sonnen' as data source.")
+            self.dataSource = Sonnen.Sonnen()
+        elif dataSource == "SolarEdge":
+            self.logger.info("Using 'SolarEdge' as data source.")
+            self.dataSource = SolarEdge.SolarEdge()
+        else:
+            self.logger.error("The data source '{{DATA_SOURCE}}' does not exist. Set correct value in property 'DataSource' in the config file and restart the service.".replace("{{DATA_SOURCE}}", dataSource))
+            self.dataSource = None
+            return
 
         self.logger.info("Initialize WeConnect")
         self.weConnect = weconnect.WeConnect(username=username, password=password, updateAfterLogin=False, loginOnInit=False)
@@ -76,6 +85,10 @@ class SolarManager:
     def run(self) -> None:
         self.logger.info("Run")
         
+        if self.dataSource == None:
+            self.logger.warn("The data source is not initialized.")
+            return
+
         currentVehicleState = self.updateVehicle()
         nickname = currentVehicleState.nickname.value
 
@@ -87,7 +100,7 @@ class SolarManager:
             self.logger.info("Vehicle is not connected to or not locked at the plug.")
             return
 
-        currentSolarState = self.solarEdge.get_current_state()
+        currentSolarState = self.dataSource.get_current_state()
         self.logger.info(f"Current solar state: {json.dumps(currentSolarState)}")
 
         if self.isCharging:
@@ -126,6 +139,7 @@ class SolarManager:
 
         if loadToGridPower > self.minPowerToGridToStartCharging or batteryChargeLevel == 100:
             self.logger.info(f"Load to grid > {self.minPowerToGridToStartCharging} (current: {loadToGridPower}) or battery charge level is 100 -> start charging")
+            Helper.sendPushNotification("Info", "Start charging")
             self.charging(vehicle, ChargingState.On)
             return
 
@@ -134,16 +148,19 @@ class SolarManager:
         
         if batteryChargeLevel < self.minBatteryLoad:
             self.logger.info(f"Battery charge level < {self.minBatteryLoad} (current: {batteryChargeLevel}) -> stop charging")
+            Helper.sendPushNotification("Info", "Stop charging because of battery charge level.")
             self.charging(vehicle, ChargingState.Off)
             return
 
         if loadToGridPower < self.maxPowerFromGridToStopCharging:
             self.logger.info(f"Load to grid < {self.maxPowerFromGridToStopCharging} (current: {loadToGridPower}) -> stop charging")
+            Helper.sendPushNotification("Info", "Stop charging because power from grid.")
             self.charging(vehicle, ChargingState.Off)
             return
 
         if vehicle.domains["charging"]["batteryStatus"].currentSOC_pct.value == 100:
             self.logger.info("Current SoC is 100 -> stop charging")
+            Helper.sendPushNotification("Info", "Stop charging because SoC is 100.")
             self.charging(vehicle, ChargingState.Off)
             return
 
@@ -171,11 +188,15 @@ class SolarManager:
 
         if newState == ChargingState.On:
             self.logger.info("Start charging")
+            Helper.sendPushNotification("Info", "Start charging")
+
             if not self.simulationMode:
                 vehicle.controls.chargingControl.value = ControlOperation.START
 
         else:
             self.logger.info("Stop charging")
+            Helper.sendPushNotification("Info", "Stop charging")
+
             if not self.simulationMode:
                 vehicle.controls.chargingControl.value = ControlOperation.STOP
 
