@@ -69,12 +69,10 @@ try:
     configParser.read(configFilePath)
     
     vin = configParser.get("SolarManager", "VIN")
-    locationId = configParser.get("SolarEdge", "LocationId")
-    apiKey = configParser.get("SolarEdge", "ApiKey")
     userName = configParser.get("WeConnect", "Username")
     password = configParser.get("WeConnect", "Password")
 
-    if not vin or not locationId or not apiKey or not userName or not password:
+    if not vin or not userName or not password:
         print("Please set all needed configurations in config file and run this script again.")
         exit
     else:
