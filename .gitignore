@@ -6,3 +6,5 @@ build/
 src/WeConnect_SolarManager.egg-info/
 src/pushNotifications.json
 *.user
+.venv/
+.vscode/
