@@ -11,7 +11,7 @@ from pathlib import Path
 
 def log_setup():
     
-    formatter = logging.Formatter("%(asctime)s :: %(name)s :: %(levelname)s :: %(message)s")
+    formatter = logging.Formatter("%(asctime)s :: %(process)d :: %(name)s :: %(levelname)s :: %(message)s")
     logLevel = logging.INFO
 
     logFilePath = os.path.join(os.path.dirname(__file__), "logs/SolarManager.log")
