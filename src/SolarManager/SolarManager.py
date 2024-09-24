@@ -148,7 +148,7 @@ class SolarManager:
         
         if batteryChargeLevel < self.minBatteryLoad:
             self.logger.info(f"Battery charge level < {self.minBatteryLoad} (current: {batteryChargeLevel}) -> stop charging")
-            Helper.sendPushNotification("Info", "Stop charging because of battery charge level.")
+            Helper.sendPushNotification("Info", "Stop charging because of home battery charge level.")
             self.charging(vehicle, ChargingState.Off)
             return
 
@@ -188,14 +188,12 @@ class SolarManager:
 
         if newState == ChargingState.On:
             self.logger.info("Start charging")
-            Helper.sendPushNotification("Info", "Start charging")
 
             if not self.simulationMode:
                 vehicle.controls.chargingControl.value = ControlOperation.START
 
         else:
             self.logger.info("Stop charging")
-            Helper.sendPushNotification("Info", "Stop charging")
 
             if not self.simulationMode:
                 vehicle.controls.chargingControl.value = ControlOperation.STOP
