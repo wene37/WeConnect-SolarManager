@@ -27,7 +27,7 @@ setup(
     python_requires=">=3.7, <4",
     install_requires=[
         'requests >= 2.27.1',
-        'weconnect[Images] >= 0.60.4',
+        'weconnect[Images] >= 0.60.5',
         'flask >= 2.3.1',
         'cryptography >= 43.0.0',
         'pywebpush >= 2.0.0'
