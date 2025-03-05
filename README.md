@@ -22,6 +22,8 @@ Do the following to install it for example on a Raspberry Pi in headless mode:
 To install an updated version of WeConnect-SolarManager, just run `./WeConnect-SolarManager/bin/pip install WeConnect-SolarManager --upgrade` from user's home directory. After that you have to restart the service by running init command above again.
 Please note that with an upgrade the `config.txt` will be overwritten. You can copy this to a file `config.txt.user`, which will be used then. But in this case you have to care about new and changed settings by yourself.
 
+**HINT:** If you are upgrading from an older version not using python's virtual environments, please remove the old version manually and start installation from new.
+
 # Documentation
 ## Configuration
 In the config.txt file you find different entries you can or have to change.
