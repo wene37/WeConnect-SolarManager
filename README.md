@@ -8,17 +8,18 @@ The SolarManager is written in Python and uses [WeConnect-python](https://github
 # Installation
 Do the following to install it for example on a Raspberry Pi in headless mode:
 
-1. Connect to your Raspberry Pi with a terminal console as user 'pi'.
+1. Connect to your Raspberry Pi with a terminal console as user 'pi' (change to user's home directory if needed).
 2. Run `sudo apt update`.
 3. Run `sudo apt full-upgrade`.
 4. Run `sudo apt install python3-pip`.
-5. Run `pip install WeConnect-SolarManager`.
-6. Set needed configuration entries in `/home/pi/.local/SolarManager/config.txt` (see [Needed configuration](#needed-configuration)).
-7. Run `sudo python /home/pi/.local/SolarManager/init.py` to install and start the service. A backup of your config file will be created automatically (see [Update](#update))
-8. Open a browser and connect to your Raspberry Pi's IP on the configured port (e.g. https://192.168.0.3:5001) to check the logs at `/home/pi/.local/SolarManager/logs` if everything runs fine.
+5. Run `python -m venv WeConnect-SolarManager`.
+6. Run `WeConnect-SolarManager/bin/pip install WeConnect-SolarManager`.
+7. Set needed configuration entries in `./WeConnect-SolarManager/SolarManager/config.txt` (see [Needed configuration](#needed-configuration)).
+8. Run `sudo python ./WeConnect-SolarManager/SolarManager/init.py` to install and start the service. A backup of your config file will be created automatically (see [Update](#update))
+9. Open a browser and connect to your Raspberry Pi's IP on the configured port (e.g. https://192.168.0.3:5001) to check the logs at `./WeConnect-SolarManager/SolarManager/logs` if everything runs fine.
 
 # Update
-To install an updated version of WeConnect-SolarManager, just run `pip install WeConnect-SolarManager --upgrade`. After that you have to restart the service by running `sudo python /home/pi/.local/SolarManager/init.py` again.
+To install an updated version of WeConnect-SolarManager, just run `./WeConnect-SolarManager/bin/pip install WeConnect-SolarManager --upgrade` from user's home directory. After that you have to restart the service by running init command above again.
 Please note that with an upgrade the `config.txt` will be overwritten. You can copy this to a file `config.txt.user`, which will be used then. But in this case you have to care about new and changed settings by yourself.
 
 # Documentation
