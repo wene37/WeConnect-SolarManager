@@ -7,7 +7,7 @@ import os
 import stat
 from datetime import datetime
 
-def initService(serviceName: string, serviceStartFile: string, virtualEnvPath: string):
+def initService(serviceName: string, serviceStartFile: string, virtualEnvPath: string, currentUser: string):
     print("Init '" + serviceName + "' service.")
 
     serviceFilePath = "/lib/systemd/system/" + serviceName + ".service"
@@ -22,7 +22,7 @@ def initService(serviceName: string, serviceStartFile: string, virtualEnvPath: s
         print("Delete existing service file at '" + serviceFilePath + "'.")
         os.remove(serviceFilePath)
 
-    serviceFileContent = "[Unit]\nDescription=" + serviceName + "\nAfter=multi-user.target\nStartLimitIntervalSec=120s\nStartLimitBurst=50\n\n[Service]\nType=simple\nWorkingDirectory=" + virtualEnvPath + "\nUser=pi\nExecStart=" + virtualEnvPath + "/bin/python ./SolarManager/" + serviceStartFile + "\nRestart=on-failure\nRestartSec=120s\n\n[Install]\nWantedBy=multi-user.target"
+    serviceFileContent = "[Unit]\nDescription=" + serviceName + "\nAfter=multi-user.target\nStartLimitIntervalSec=120s\nStartLimitBurst=50\n\n[Service]\nType=simple\nWorkingDirectory=" + virtualEnvPath + "\nUser=" + currentUser + "\nExecStart=" + virtualEnvPath + "/bin/python ./SolarManager/" + serviceStartFile + "\nRestart=on-failure\nRestartSec=120s\n\n[Install]\nWantedBy=multi-user.target"
     
     with open(serviceFilePath, 'w') as f:
         print("Writing new service file at '" + serviceFilePath + "'.")
@@ -41,19 +41,22 @@ def initService(serviceName: string, serviceStartFile: string, virtualEnvPath: s
 
     print("Init of '" + serviceName + "' done.")
 
-def initSolarManagerService(configFilePath: string, virtualEnvPath: string):
+def initSolarManagerService(configFilePath: string, virtualEnvPath: string, currentUser: string):
 
     print("Create a copy of current config file.")
     os.system("cp -rf " + configFilePath + " " + configFilePath + "-" + datetime.today().strftime('%Y%m%d'))
 
-    initService("SolarManager", "main.py", virtualEnvPath)
+    initService("SolarManager", "main.py", virtualEnvPath, currentUser)
 
-def initWebAppService(virtualEnvPath: string, port: int):
+def initWebAppService(virtualEnvPath: string, port: int, currentUser: string):
 
-    initService("SolarManagerWebApp", "app.py", virtualEnvPath)
+    initService("SolarManagerWebApp", "app.py", virtualEnvPath, currentUser)
     print("Web app is running on this host on port " + str(port) + ".")
 
 try:
+
+    currentUser = os.getlogin()
+    print("Running as user '" + str(currentUser) + "'.")
 
     virtualEnvPath = pathlib.Path(__file__).parent.parent.resolve()
     configFilePath = (virtualEnvPath / "SolarManager/config.txt")
@@ -76,8 +79,8 @@ try:
         print("Please set all needed configurations in config file and run this script again.")
         exit
     else:
-        initSolarManagerService(str(configFilePath), str(virtualEnvPath))
-        initWebAppService(str(virtualEnvPath), configParser.getint("WebApp", "Port"))
+        initSolarManagerService(str(configFilePath), str(virtualEnvPath), currentUser)
+        initWebAppService(str(virtualEnvPath), configParser.getint("WebApp", "Port"), currentUser)
 
 except Exception as e:
     raise e
