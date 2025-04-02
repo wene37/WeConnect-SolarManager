@@ -86,7 +86,7 @@ class SolarManager:
         self.logger.info("Run")
         
         if self.dataSource == None:
-            self.logger.warn("The data source is not initialized.")
+            self.logger.warning("The data source is not initialized.")
             return
 
         currentVehicleState = self.updateVehicle()
@@ -183,7 +183,7 @@ class SolarManager:
             vehicle.domains["charging"]["chargingSettings"].maxChargeCurrentAC.value = MaximumChargeCurrent.REDUCED
 
         if vehicle.controls.chargingControl is None or not vehicle.controls.chargingControl.enabled:
-            self.logger.warn("Charging control is none or not enabled for vehicle!")
+            self.logger.warning("Charging control is none or not enabled for vehicle!")
             return
 
         if newState == ChargingState.On:
