@@ -32,9 +32,6 @@ class SolarManager:
         self.vin = configParser.get("SolarManager", "VIN")
         self.vehicleNameSuffix = configParser.get("SolarManager", "VehicleNameSuffix").lower()
 
-        self.isCharging = False
-        self.chargingChangeRequested = False
-
         self.logger.info(f"Simulation mode: {self.simulationMode}")
         dataSource = configParser.get("SolarManager", "DataSource")
 
@@ -54,7 +51,16 @@ class SolarManager:
 
         self.logger.info("Login to WeConnect")
         self.weConnect.login()
-        self.weConnect.update()
+
+        vehicle = self.updateVehicle()
+
+        if vehicle == None:
+            self.logger.warning("Vehicle not found.")
+            return
+
+        self.chargingChangeRequested = False
+        self.isCharging = vehicle.domains["charging"]["chargingStatus"].chargingState.value == ChargingStatus.ChargingState.CHARGING
+        self.logger.info(f"Vehicle charging when service started: {self.isCharging}")
 
         self.weConnect.addObserver(self.onWeConnectEvent, addressable.AddressableLeaf.ObserverEvent.VALUE_CHANGED
                           | addressable.AddressableLeaf.ObserverEvent.ENABLED
@@ -90,6 +96,11 @@ class SolarManager:
             return
 
         currentVehicleState = self.updateVehicle()
+
+        if currentVehicleState == None:
+            self.logger.warning("Vehcile not found.")
+            return
+        
         nickname = currentVehicleState.nickname.value
 
         if not nickname.lower().endswith(self.vehicleNameSuffix):
