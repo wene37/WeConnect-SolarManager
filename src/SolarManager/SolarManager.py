@@ -32,9 +32,6 @@ class SolarManager:
         self.vin = configParser.get("SolarManager", "VIN")
         self.vehicleNameSuffix = configParser.get("SolarManager", "VehicleNameSuffix").lower()
 
-        self.isCharging = False
-        self.chargingChangeRequested = False
-
         self.logger.info(f"Simulation mode: {self.simulationMode}")
         dataSource = configParser.get("SolarManager", "DataSource")
 
@@ -54,7 +51,16 @@ class SolarManager:
 
         self.logger.info("Login to WeConnect")
         self.weConnect.login()
-        self.weConnect.update()
+
+        vehicle = self.updateVehicle()
+
+        if vehicle == None:
+            self.logger.warning("Vehicle not found.")
+            return
+
+        self.chargingChangeRequested = False
+        self.isCharging = vehicle.domains["charging"]["chargingStatus"].chargingState.value == ChargingStatus.ChargingState.CHARGING
+        self.logger.info(f"Vehicle charging when service started: {self.isCharging}")
 
         self.weConnect.addObserver(self.onWeConnectEvent, addressable.AddressableLeaf.ObserverEvent.VALUE_CHANGED
                           | addressable.AddressableLeaf.ObserverEvent.ENABLED
@@ -86,10 +92,15 @@ class SolarManager:
         self.logger.info("Run")
         
         if self.dataSource == None:
-            self.logger.warn("The data source is not initialized.")
+            self.logger.warning("The data source is not initialized.")
             return
 
         currentVehicleState = self.updateVehicle()
+
+        if currentVehicleState == None:
+            self.logger.warning("Vehcile not found.")
+            return
+        
         nickname = currentVehicleState.nickname.value
 
         if not nickname.lower().endswith(self.vehicleNameSuffix):
@@ -183,7 +194,7 @@ class SolarManager:
             vehicle.domains["charging"]["chargingSettings"].maxChargeCurrentAC.value = MaximumChargeCurrent.REDUCED
 
         if vehicle.controls.chargingControl is None or not vehicle.controls.chargingControl.enabled:
-            self.logger.warn("Charging control is none or not enabled for vehicle!")
+            self.logger.warning("Charging control is none or not enabled for vehicle!")
             return
 
         if newState == ChargingState.On:

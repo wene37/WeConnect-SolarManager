@@ -8,7 +8,7 @@ The SolarManager is written in Python and uses [WeConnect-python](https://github
 # Installation
 Do the following to install it for example on a Raspberry Pi in headless mode:
 
-1. Connect to your Raspberry Pi with a terminal console as user 'pi' (change to user's home directory if needed).
+1. Connect to your Raspberry Pi with a terminal console as user with sudo access (change to user's home directory if needed).
 2. Run `sudo apt update`.
 3. Run `sudo apt full-upgrade`.
 4. Run `sudo apt install python3-pip`.

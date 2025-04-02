@@ -1,5 +1,6 @@
 import json
 import os
+import re
 
 from flask import Flask, render_template, request
 
@@ -14,7 +15,22 @@ staticDir = os.path.join(os.path.dirname(__file__), "static")
 app = Flask("WeConnect-SolarManager", template_folder=templateDir, static_folder=staticDir)
 
 def getLogs() -> str:
-    logEntries = Helper.getLogEntries()
+
+    logEntries = []
+    logLines = Helper.getLogEntries()
+
+    for line in logLines:
+
+        dateMatch = re.match(r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{1,3}", line)
+
+        if dateMatch == None:
+            logEntries[-1] += "<br/>" + line
+        else:
+            dateMatchLength = len(dateMatch.group(0))
+            logEntries.append("<span class='logTime'>" + line[0:dateMatchLength] + "</span>" + line[dateMatchLength:])
+
+    logEntries.reverse()
+
     return '<br/>'.join(logEntries)
 
 @app.route('/api/pushnotification', methods=['POST'])
