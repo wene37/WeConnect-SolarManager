@@ -71,3 +71,7 @@ button:disabled {
 #GiveAccess {
     margin-bottom: 20px;
 }
+
+.logTime {
+    font-weight: 600;
+}
