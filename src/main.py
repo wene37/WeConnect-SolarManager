@@ -1,5 +1,6 @@
 #!/usr/bin/python
 
+import datetime
 import os
 import logging
 import logging.handlers
@@ -29,10 +30,26 @@ LOG.info("Starting service.")
 
 try:
 
-    configParser = Helper.loadConfig()
-    Helper.sendPushNotification("Info", "Starting service")
+    datetimeNow = datetime.datetime.now()
+    datetimeNowString = datetimeNow.strftime("%Y-%m-%d %H:%M:%S")
 
+    configParser = Helper.loadConfig()
     sleepTimeSeconds = configParser.getint("SolarManager", "SolarCheckInterval")
+    lastServiceStart = configParser.get("Dynamic", "LastServiceStart", fallback="")
+
+    if (lastServiceStart == "" or configParser.getboolean("SolarManager", "SimulationMode") == True):
+        lastServiceStart = "1970-01-01 00:00:00"
+
+    configParser.set("Dynamic", "LastServiceStart", datetimeNowString)
+    Helper.writeConfig(configParser)
+
+    if ((datetime.datetime.now() - datetime.datetime.strptime(lastServiceStart, "%Y-%m-%d %H:%M:%S")).total_seconds() < sleepTimeSeconds):
+
+        LOG.info(f"Service was started recently. Sleeping for {sleepTimeSeconds} seconds.")
+        sleep(sleepTimeSeconds)
+
+    Helper.sendPushNotification("Info", "Starting service")    
+
     solarManager = SolarManager.SolarManager(configParser.get("WeConnect", "Username"), configParser.get("WeConnect", "Password"))
 
     while True:
