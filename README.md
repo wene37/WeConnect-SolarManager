@@ -55,6 +55,12 @@ In the config.txt file you find different entries you can or have to change.
 ||WebPushPublicKey|VAPID setting for push notifications.|
 ||WebPushPrivateKey|VAPID setting for push notifications.|
 
+### Dynamic
+Those settings are use at runtime. Do not modify them.
+|Section|Entry|Description|
+|---|---|---|
+|Dynamic|LastServiceStart|Persistence of last service start time.|
+
 ## Enable/Disable SolarManager
 As SolarManager can't know if you want to load your car with solar power only or just load it because you need a full battery, there's a switch you can use right from your WeConnect ID App. If you want SolarManager to be active for your car, please extend your car's nickname in the app with the suffix `(SMC)` (= SolarManager Control). If you want to disable SolarManager for your car, just remove the suffix again.
 
