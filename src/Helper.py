@@ -21,19 +21,28 @@ class Helper:
         return []
 
     @staticmethod
-    def loadConfig() -> configparser:
+    def getConfigFilePath():
         configFileName = "config.txt"
         userConfigFileName = "config.txt.user"
-        userConfigFile = Path(os.path.join(os.path.dirname(__file__), userConfigFileName))
+        userConfigFilePath = Path(os.path.join(os.path.dirname(__file__), userConfigFileName))
 
-        if userConfigFile.is_file():
+        if userConfigFilePath.is_file():
             configFileName = userConfigFileName
         
-        configFilePath = os.path.join(os.path.dirname(__file__), configFileName)
+        return os.path.join(os.path.dirname(__file__), configFileName)
+
+    @staticmethod
+    def loadConfig() -> configparser:
+        configFilePath = Helper.getConfigFilePath()
         configParser = configparser.ConfigParser()
         configParser.read(configFilePath)
 
         return configParser
+
+    @staticmethod
+    def writeConfig(configParser: configparser):
+        configFilePath = Helper.getConfigFilePath()
+        configParser.write(open(configFilePath, "w"))
 
     @staticmethod
     def readFile(relFilePath: str) -> str:
@@ -77,7 +86,7 @@ class Helper:
                     "keys": { "auth": device["auth"], "p256dh": device["p256dh"] }
                 }
 
-                data = json.dumps({"title": title, "message": message, "tag": "", "dateTime": datetime.utcnow()}, default=str)
+                data = json.dumps({"title": title, "message": message, "tag": "", "dateTime": datetime.now(datetime.timezone.utc)}, default=str)
 
                 webpush(
                     subscription_info=subscription_information,
