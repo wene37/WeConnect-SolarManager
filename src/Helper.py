@@ -3,10 +3,10 @@ import os
 import configparser
 import logging
 import logging.handlers
+import datetime
 
 from pathlib import Path
 from pywebpush import webpush
-from datetime import datetime
 
 class Helper:
 
@@ -86,7 +86,7 @@ class Helper:
                     "keys": { "auth": device["auth"], "p256dh": device["p256dh"] }
                 }
 
-                data = json.dumps({"title": title, "message": message, "tag": "", "dateTime": datetime.now(datetime.timezone.utc)}, default=str)
+                data = json.dumps({"title": title, "message": message, "tag": "", "dateTime": datetime.datetime.now(datetime.timezone.utc)}, default=str)
 
                 webpush(
                     subscription_info=subscription_information,
