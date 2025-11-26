@@ -56,7 +56,7 @@ In the config.txt file you find different entries you can or have to change.
 ||WebPushPrivateKey|VAPID setting for push notifications.|
 
 ### Dynamic
-Those settings are use at runtime. Do not modify them.
+Those settings are used at runtime. Do not modify them.
 |Section|Entry|Description|
 |---|---|---|
 |Dynamic|LastServiceStart|Persistence of last service start time.|
@@ -74,5 +74,5 @@ In the web app you currently see the today's log entries and you can enable push
 
 # Tested with
 - SolarEdge solar system with 12 kWh battery
-- Volkswagen ID.4 1st MAX
+- Volkswagen ID.Buzz 2025
 - Volkswagen ID.Charger Connect

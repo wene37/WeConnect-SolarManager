@@ -26,12 +26,9 @@ def log_setup():
 
 log_setup()
 LOG = logging.getLogger("SolarManager.Service")
-LOG.info("Starting service.")
+LOG.info("Service started.")
 
 try:
-
-    datetimeNow = datetime.datetime.now()
-    datetimeNowString = datetimeNow.strftime("%Y-%m-%d %H:%M:%S")
 
     configParser = Helper.loadConfig()
     sleepTimeSeconds = configParser.getint("SolarManager", "SolarCheckInterval")
@@ -40,15 +37,16 @@ try:
     if (lastServiceStart == "" or configParser.getboolean("SolarManager", "SimulationMode") == True):
         lastServiceStart = "1970-01-01 00:00:00"
 
-    configParser.set("Dynamic", "LastServiceStart", datetimeNowString)
-    Helper.writeConfig(configParser)
-
     if ((datetime.datetime.now() - datetime.datetime.strptime(lastServiceStart, "%Y-%m-%d %H:%M:%S")).total_seconds() < sleepTimeSeconds):
 
-        LOG.info(f"Service was started recently. Sleeping for {sleepTimeSeconds} seconds.")
+        LOG.info(f"Service was started recently ({lastServiceStart}). Sleeping for {sleepTimeSeconds} seconds.")
         sleep(sleepTimeSeconds)
 
-    Helper.sendPushNotification("Info", "Starting service")    
+    configParser.set("Dynamic", "LastServiceStart", datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"))
+    Helper.writeConfig(configParser)
+
+    LOG.info("Starting service.")
+    Helper.sendPushNotification("Info", "Starting service.")
 
     solarManager = SolarManager.SolarManager(configParser.get("WeConnect", "Username"), configParser.get("WeConnect", "Password"))
 
