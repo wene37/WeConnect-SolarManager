@@ -31,6 +31,7 @@ class SolarManager:
         self.simulationMode = configParser.getboolean("SolarManager", "SimulationMode")
         self.vin = configParser.get("SolarManager", "VIN")
         self.vehicleNameSuffix = configParser.get("SolarManager", "VehicleNameSuffix").lower()
+        self.chargingChangeRequested = False
 
         self.logger.info(f"Simulation mode: {self.simulationMode}")
         dataSource = configParser.get("SolarManager", "DataSource")
@@ -52,19 +53,18 @@ class SolarManager:
         self.logger.info("Login to WeConnect")
         self.weConnect.login()
 
+        self.weConnect.addObserver(self.onWeConnectEvent, addressable.AddressableLeaf.ObserverEvent.VALUE_CHANGED
+                          | addressable.AddressableLeaf.ObserverEvent.ENABLED
+                          | addressable.AddressableLeaf.ObserverEvent.DISABLED)
+
         vehicle = self.updateVehicle()
 
         if vehicle == None:
             self.logger.warning("Vehicle not found.")
             return
 
-        self.chargingChangeRequested = False
         self.isCharging = vehicle.domains["charging"]["chargingStatus"].chargingState.value == ChargingStatus.ChargingState.CHARGING
         self.logger.info(f"Vehicle charging when service started: {self.isCharging}")
-
-        self.weConnect.addObserver(self.onWeConnectEvent, addressable.AddressableLeaf.ObserverEvent.VALUE_CHANGED
-                          | addressable.AddressableLeaf.ObserverEvent.ENABLED
-                          | addressable.AddressableLeaf.ObserverEvent.DISABLED)
 
     def __del__(self) -> None:
         self.logger.info("Del")
@@ -120,13 +120,18 @@ class SolarManager:
             self.checkStartCharging(currentSolarState["loadToGridPower"], currentSolarState["batteryChargeLevel"], currentVehicleState)
 
     def updateVehicle(self) -> Vehicle:
-        self.logger.info("Update vehicle")        
-        self.weConnect.update()
+        self.logger.info("Update vehicle")
 
-        for vin, vehicle in self.weConnect.vehicles.items():
-            if vin == self.vin:
-                return vehicle
+        try:      
+            self.weConnect.update()
 
+            for vin, vehicle in self.weConnect.vehicles.items():
+                if vin == self.vin:
+                    return vehicle
+                
+        except Exception as e:
+            self.logger.error(f"Error updating vehicle: {e}")
+        
         return None
 
     def checkStartCharging(self, loadToGridPower: float, batteryChargeLevel: float, vehicle: Vehicle) -> None:
