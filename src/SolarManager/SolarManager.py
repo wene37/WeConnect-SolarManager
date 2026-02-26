@@ -32,6 +32,7 @@ class SolarManager:
         self.vin = configParser.get("SolarManager", "VIN")
         self.vehicleNameSuffix = configParser.get("SolarManager", "VehicleNameSuffix").lower()
         self.chargingChangeRequested = False
+        self.ignoreDcCharging = configParser.getboolean("SolarManager", "IgnoreDcCharging")
 
         self.logger.info(f"Simulation mode: {self.simulationMode}")
         dataSource = configParser.get("SolarManager", "DataSource")
@@ -155,6 +156,10 @@ class SolarManager:
             self.logger.info("Vehicle is not ready for start charging.")
             return
 
+        if self.ignoreDcCharging and vehicle.domains["charging"]["chargingStatus"].chargeType.value is ChargingStatus.ChargeType.DC:
+            self.logger.info("Vehicle is DC charging -> do nothing")
+            return
+
         if loadToGridPower > self.minPowerToGridToStartCharging or batteryChargeLevel == 100:
             self.logger.info(f"Load to grid > {self.minPowerToGridToStartCharging} (current: {loadToGridPower}) or battery charge level is 100 -> start charging")
             Helper.sendPushNotification("Info", "Start charging")
@@ -163,6 +168,10 @@ class SolarManager:
 
     def checkStopCharging(self, loadToGridPower: float, batteryChargeLevel: float, vehicle: Vehicle) -> None:
         self.logger.info("Check stop charging")
+
+        if self.ignoreDcCharging and vehicle.domains["charging"]["chargingStatus"].chargeType.value is ChargingStatus.ChargeType.DC:
+            self.logger.info("Vehicle is DC charging -> do nothing")
+            return
         
         if batteryChargeLevel < self.minBatteryLoad:
             self.logger.info(f"Battery charge level < {self.minBatteryLoad} (current: {batteryChargeLevel}) -> stop charging")

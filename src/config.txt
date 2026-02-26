@@ -8,6 +8,7 @@ SimulationMode=False
 VIN=
 VehicleNameSuffix=(SMC)
 DataSource=SolarEdge
+IgnoreDcCharging=True
 
 [SolarEdge]
 ApiUrl=https://monitoringapi.solaredge.com/site/{{LOCATION_ID}}/currentPowerFlow.json?api_key={{API_KEY}}
