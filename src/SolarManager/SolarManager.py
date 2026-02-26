@@ -32,6 +32,7 @@ class SolarManager:
         self.vin = configParser.get("SolarManager", "VIN")
         self.vehicleNameSuffix = configParser.get("SolarManager", "VehicleNameSuffix").lower()
         self.chargingChangeRequested = False
+        self.ignoreDcCharging = configParser.getboolean("SolarManager", "IgnoreDcCharging")
 
         self.logger.info(f"Simulation mode: {self.simulationMode}")
         dataSource = configParser.get("SolarManager", "DataSource")
@@ -137,7 +138,7 @@ class SolarManager:
     def checkStartCharging(self, loadToGridPower: float, batteryChargeLevel: float, vehicle: Vehicle) -> None:
         self.logger.info("Check start charging")
 
-        if loadToGridPower <= 0:
+        if loadToGridPower < 0:
             self.logger.info(f"Load to grid is {loadToGridPower} -> do nothing")
             return
 
@@ -149,8 +150,14 @@ class SolarManager:
             self.logger.info("Current vehicle SoC is 100 -> do nothing")
             return
 
-        if vehicle.domains["charging"]["chargingStatus"].chargingState.value is not ChargingStatus.ChargingState.READY_FOR_CHARGING:
+        chargingState = vehicle.domains["charging"]["chargingStatus"].chargingState.value
+
+        if chargingState is not ChargingStatus.ChargingState.READY_FOR_CHARGING and chargingState is not ChargingStatus.ChargingState.CHARGE_PURPOSE_REACHED_CONSERVATION and chargingState is not ChargingStatus.ChargingState.CHARGE_PURPOSE_REACHED_NOT_CONSERVATION_CHARGING:
             self.logger.info("Vehicle is not ready for start charging.")
+            return
+
+        if self.ignoreDcCharging and vehicle.domains["charging"]["chargingStatus"].chargeType.value is ChargingStatus.ChargeType.DC:
+            self.logger.info("Vehicle is DC charging -> do nothing")
             return
 
         if loadToGridPower > self.minPowerToGridToStartCharging or batteryChargeLevel == 100:
@@ -161,6 +168,10 @@ class SolarManager:
 
     def checkStopCharging(self, loadToGridPower: float, batteryChargeLevel: float, vehicle: Vehicle) -> None:
         self.logger.info("Check stop charging")
+
+        if self.ignoreDcCharging and vehicle.domains["charging"]["chargingStatus"].chargeType.value is ChargingStatus.ChargeType.DC:
+            self.logger.info("Vehicle is DC charging -> do nothing")
+            return
         
         if batteryChargeLevel < self.minBatteryLoad:
             self.logger.info(f"Battery charge level < {self.minBatteryLoad} (current: {batteryChargeLevel}) -> stop charging")
