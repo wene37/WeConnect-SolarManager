@@ -149,7 +149,9 @@ class SolarManager:
             self.logger.info("Current vehicle SoC is 100 -> do nothing")
             return
 
-        if vehicle.domains["charging"]["chargingStatus"].chargingState.value is not ChargingStatus.ChargingState.READY_FOR_CHARGING:
+        chargingState = vehicle.domains["charging"]["chargingStatus"].chargingState.value
+
+        if chargingState is not ChargingStatus.ChargingState.READY_FOR_CHARGING and chargingState is not ChargingStatus.ChargingState.CHARGE_PURPOSE_REACHED_CONSERVATION and chargingState is not ChargingStatus.ChargingState.CHARGE_PURPOSE_REACHED_NOT_CONSERVATION_CHARGING:
             self.logger.info("Vehicle is not ready for start charging.")
             return
 
