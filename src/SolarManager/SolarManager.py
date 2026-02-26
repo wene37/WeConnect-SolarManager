@@ -137,7 +137,7 @@ class SolarManager:
     def checkStartCharging(self, loadToGridPower: float, batteryChargeLevel: float, vehicle: Vehicle) -> None:
         self.logger.info("Check start charging")
 
-        if loadToGridPower <= 0:
+        if loadToGridPower < 0:
             self.logger.info(f"Load to grid is {loadToGridPower} -> do nothing")
             return
 
