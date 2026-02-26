@@ -50,6 +50,7 @@ In the config.txt file you find different entries you can or have to change.
 ||MinBatteryLoad|Minium battery load you want to have. If battery load goes below this, SolarManager will stop charging your car.|
 ||SimulationMode|You can enable simulation mode to only log everything without really start or stop charging your car.|
 ||VehicleNameSuffix|The suffix you need to add to your car's nickname (see below).|
+||IgnoreDcCharging|Do not run SolarManager if vehicle is charging with DC.|
 |WebApp|Port|Port for the web app.|
 ||WebPushSubject|VAPID setting for push notifications.|
 ||WebPushPublicKey|VAPID setting for push notifications.|
