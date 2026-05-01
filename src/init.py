@@ -28,7 +28,7 @@ def initService(serviceName: string, serviceStartFile: string, virtualEnvPath: s
         print("Writing new service file at '" + serviceFilePath + "'.")
         f.write(serviceFileContent)
 
-    os.chmod(serviceFilePath, 644)
+    os.chmod(serviceFilePath, 0o644)
 
     mainFilePath = virtualEnvPath + "/SolarManager/" + serviceStartFile
     st = os.stat(mainFilePath)
