@@ -1,17 +1,28 @@
 import logging
 import json
+import os
 
 from Helper import Helper
 from SolarEdge import SolarEdge
 from Sonnen import Sonnen
 from SolarManager.Elements.enums import ChargingState
 
-from weconnect import weconnect, addressable
-from weconnect.elements.control_operation import ControlOperation
-from weconnect.elements.enums import MaximumChargeCurrent
-from weconnect.elements.charging_status import ChargingStatus
-from weconnect.elements.plug_status import PlugStatus
-from weconnect.elements.vehicle import Vehicle
+from carconnectivity import carconnectivity
+from carconnectivity.vehicle import ElectricVehicle
+from carconnectivity.charging import Charging
+from carconnectivity.charging_connector import ChargingConnector
+from carconnectivity.observable import Observable
+from carconnectivity.commands import GenericCommand
+from carconnectivity.command_impl import ChargingStartStopCommand
+
+# Disable image support in CarConnectivity and VW connector
+# carconnectivity.SUPPORT_IMAGES = False
+# carconnectivity.SUPPORT_ASCII_IMAGES = False
+# try:
+#     import carconnectivity_connectors.volkswagen.connector as vw_connector
+#     vw_connector.SUPPORT_IMAGES = False
+# except ImportError:
+#     pass
 
 class SolarManager:
     def __init__(
@@ -48,67 +59,97 @@ class SolarManager:
             self.dataSource = None
             return
 
-        self.logger.info("Initialize WeConnect")
-        self.weConnect = weconnect.WeConnect(username=username, password=password, updateAfterLogin=False, loginOnInit=False)
+        self.logger.info("Initialize CarConnectivity")
+        tokenstore_file = os.path.join(os.path.dirname(__file__), "carconnectivity.token")
+        config = {
+            "carConnectivity": {
+                "connectors": [
+                    {
+                        "type": "volkswagen",
+                        "config": {
+                            "username": username,
+                            "password": password
+                        }
+                    }
+                ]
+            }
+        }
 
-        self.logger.info("Login to WeConnect")
-        self.weConnect.login()
+        # Save root logger formatters before CarConnectivity overwrites them
+        root_logger = logging.getLogger()
+        saved_formatters = [(h, h.formatter) for h in root_logger.handlers]
 
-        self.weConnect.addObserver(self.onWeConnectEvent, addressable.AddressableLeaf.ObserverEvent.VALUE_CHANGED
-                          | addressable.AddressableLeaf.ObserverEvent.ENABLED
-                          | addressable.AddressableLeaf.ObserverEvent.DISABLED)
+        self.carConnectivity = carconnectivity.CarConnectivity(config=config, tokenstore_file=tokenstore_file)
+        
+        # Restore original formatters
+        for handler, fmt in saved_formatters:
+            handler.setFormatter(fmt)
+
+        self.logger.info("Starting CarConnectivity")
+        self.carConnectivity.startup()
 
         vehicle = self.updateVehicle()
 
-        if vehicle == None:
+        if vehicle is None:
             self.logger.warning("Vehicle not found.")
             return
 
-        self.isCharging = vehicle.domains["charging"]["chargingStatus"].chargingState.value == ChargingStatus.ChargingState.CHARGING
+        if not isinstance(vehicle, ElectricVehicle):
+            self.logger.warning("Vehicle is not an electric vehicle.")
+            return
+
+        vehicle.charging.state.add_observer(
+            self.onChargingStateChanged,
+            flag=Observable.ObserverEvent.VALUE_CHANGED
+        )
+
+        self.isCharging = vehicle.charging.state.value == Charging.ChargingState.CHARGING
         self.logger.info(f"Vehicle charging when service started: {self.isCharging}")
 
     def __del__(self) -> None:
         self.logger.info("Del")
-        self.weConnect.disconnect()
+        self.carConnectivity.shutdown()
 
     def disconnect(self) -> None:
         self.logger.info("Disconnect")
-        self.weConnect.disconnect()
+        self.carConnectivity.shutdown()
 
-    def onWeConnectEvent(self, element, flags):
+    def onChargingStateChanged(self, element, flags):
+        if flags & Observable.ObserverEvent.VALUE_CHANGED:
+            self.logger.info(f"Charging state changed to {element.value}.")
 
-        if isinstance(element, addressable.AddressableAttribute):
-            if flags & addressable.AddressableLeaf.ObserverEvent.VALUE_CHANGED:
-                if element.getGlobalAddress() == f"/vehicles/{self.vin}/domains/charging/chargingStatus/chargingState":
-                    self.logger.info(f"Charging state changed to {element.value}.")
+            if not self.chargingChangeRequested:
+                self.logger.info("Charging state changed by user.")
 
-                    if not self.chargingChangeRequested:
-                        self.logger.info("Charging state changed by user.")
-
-                    self.chargingChangeRequested = False
-                    self.isCharging = element.value == ChargingStatus.ChargingState.CHARGING
-                    self.logger.info(f"Is charging: {self.isCharging}")
+            self.chargingChangeRequested = False
+            self.isCharging = element.value == Charging.ChargingState.CHARGING
+            self.logger.info(f"Is charging: {self.isCharging}")
 
     def run(self) -> None:
         self.logger.info("Run")
         
-        if self.dataSource == None:
+        if self.dataSource is None:
             self.logger.warning("The data source is not initialized.")
             return
 
         currentVehicleState = self.updateVehicle()
 
-        if currentVehicleState == None:
-            self.logger.warning("Vehcile not found.")
+        if currentVehicleState is None:
+            self.logger.warning("Vehicle not found.")
             return
-        
-        nickname = currentVehicleState.nickname.value
+
+        if not isinstance(currentVehicleState, ElectricVehicle):
+            self.logger.warning("Vehicle is not an electric vehicle.")
+            return
+
+        nickname = currentVehicleState.name.value or ""
 
         if not nickname.lower().endswith(self.vehicleNameSuffix):
             self.logger.info(f"SolarManager not enabled for this car - nickname suffix '{self.vehicleNameSuffix}' missing (current nickname: {nickname}).")
             return
 
-        if currentVehicleState.domains["charging"]["plugStatus"].plugConnectionState.value is not PlugStatus.PlugConnectionState.CONNECTED or currentVehicleState.domains["charging"]["plugStatus"].plugLockState.value is not PlugStatus.PlugLockState.LOCKED:
+        connector = currentVehicleState.charging.connector
+        if connector.connection_state.value is not ChargingConnector.ChargingConnectorConnectionState.CONNECTED or connector.lock_state.value is not ChargingConnector.ChargingConnectorLockState.LOCKED:
             self.logger.info("Vehicle is not connected to or not locked at the plug.")
             return
 
@@ -120,22 +161,30 @@ class SolarManager:
         else:
             self.checkStartCharging(currentSolarState["loadToGridPower"], currentSolarState["batteryChargeLevel"], currentVehicleState)
 
-    def updateVehicle(self) -> Vehicle:
+    def updateVehicle(self):
         self.logger.info("Update vehicle")
 
-        try:      
-            self.weConnect.update()
+        try:
+            self.carConnectivity.fetch_all()
 
-            for vin, vehicle in self.weConnect.vehicles.items():
-                if vin == self.vin:
+            garage = self.carConnectivity.get_garage()
+            if garage is not None:
+                vehicle = garage.get_vehicle(self.vin)
+                if vehicle is not None:
                     return vehicle
-                
+
         except Exception as e:
             self.logger.error(f"Error updating vehicle: {e}")
         
         return None
 
-    def checkStartCharging(self, loadToGridPower: float, batteryChargeLevel: float, vehicle: Vehicle) -> None:
+    def getVehicleSoC(self, vehicle: ElectricVehicle):
+        electric_drive = vehicle.get_electric_drive()
+        if electric_drive is not None and electric_drive.level.enabled and electric_drive.level.value is not None:
+            return electric_drive.level.value
+        return None
+
+    def checkStartCharging(self, loadToGridPower: float, batteryChargeLevel: float, vehicle: ElectricVehicle) -> None:
         self.logger.info("Check start charging")
 
         if loadToGridPower < -0.1:
@@ -146,17 +195,18 @@ class SolarManager:
             self.logger.info(f"Battery charge level < {self.minBatteryLoadToStartCharging} (current: {batteryChargeLevel}) -> do nothing")
             return
 
-        if vehicle.domains["charging"]["batteryStatus"].currentSOC_pct.value == 100:
+        vehicleSoc = self.getVehicleSoC(vehicle)
+        if vehicleSoc is not None and vehicleSoc == 100:
             self.logger.info("Current vehicle SoC is 100 -> do nothing")
             return
 
-        chargingState = vehicle.domains["charging"]["chargingStatus"].chargingState.value
+        chargingState = vehicle.charging.state.value
 
-        if chargingState is not ChargingStatus.ChargingState.READY_FOR_CHARGING and chargingState is not ChargingStatus.ChargingState.CHARGE_PURPOSE_REACHED_CONSERVATION and chargingState is not ChargingStatus.ChargingState.CHARGE_PURPOSE_REACHED_NOT_CONSERVATION_CHARGING:
+        if chargingState not in [Charging.ChargingState.READY_FOR_CHARGING, Charging.ChargingState.CONSERVATION, Charging.ChargingState.OFF]:
             self.logger.info("Vehicle is not ready for start charging.")
             return
 
-        if self.ignoreDcCharging and vehicle.domains["charging"]["chargingStatus"].chargeType.value is ChargingStatus.ChargeType.DC:
+        if self.ignoreDcCharging and vehicle.charging.type.value == Charging.ChargingType.DC:
             self.logger.info("Vehicle is DC charging -> do nothing")
             return
 
@@ -166,10 +216,10 @@ class SolarManager:
             self.charging(vehicle, ChargingState.On)
             return
 
-    def checkStopCharging(self, loadToGridPower: float, batteryChargeLevel: float, vehicle: Vehicle) -> None:
+    def checkStopCharging(self, loadToGridPower: float, batteryChargeLevel: float, vehicle: ElectricVehicle) -> None:
         self.logger.info("Check stop charging")
 
-        if self.ignoreDcCharging and vehicle.domains["charging"]["chargingStatus"].chargeType.value is ChargingStatus.ChargeType.DC:
+        if self.ignoreDcCharging and vehicle.charging.type.value == Charging.ChargingType.DC:
             self.logger.info("Vehicle is DC charging -> do nothing")
             return
         
@@ -185,44 +235,50 @@ class SolarManager:
             self.charging(vehicle, ChargingState.Off)
             return
 
-        if vehicle.domains["charging"]["batteryStatus"].currentSOC_pct.value == 100:
+        vehicleSoc = self.getVehicleSoC(vehicle)
+        if vehicleSoc is not None and vehicleSoc == 100:
             self.logger.info("Current SoC is 100 -> stop charging")
             Helper.sendPushNotification("Info", "Stop charging because SoC is 100.")
             self.charging(vehicle, ChargingState.Off)
             return
 
-        if vehicle.domains["charging"]["chargingStatus"].chargingState.value is not ChargingStatus.ChargingState.CHARGING:
+        if vehicle.charging.state.value is not Charging.ChargingState.CHARGING:
             self.logger.info("Vehicle is not charging.")
             self.isCharging = False
             return
 
         self.logger.info("Charging still ok -> do nothing")
 
-    def charging(self, vehicle: Vehicle, newState: ChargingState) -> None:
+    def charging(self, vehicle: ElectricVehicle, newState: ChargingState) -> None:
         self.logger.info(f"Charging: {newState}")
 
         self.logger.info("Setting vehicle charging target SoC to 100")
         if not self.simulationMode:
-            vehicle.domains["charging"]["chargingSettings"].targetSOC_pct.value = 100
+            vehicle.charging.settings.target_level.value = 100
 
-        self.logger.info(f"Setting vehicle max AC to {MaximumChargeCurrent.REDUCED}")
+        self.logger.info("Setting vehicle max charge current AC to reduced")
         if not self.simulationMode:
-            vehicle.domains["charging"]["chargingSettings"].maxChargeCurrentAC.value = MaximumChargeCurrent.REDUCED
+            vehicle.charging.settings.maximum_current.value = 6
 
-        if vehicle.controls.chargingControl is None or not vehicle.controls.chargingControl.enabled:
-            self.logger.warning("Charging control is none or not enabled for vehicle!")
+        if vehicle.charging.commands is None or not vehicle.charging.commands.contains_command('start-stop'):
+            self.logger.warning("Charging start-stop command is not available for vehicle!")
+            return
+
+        start_stop_command: GenericCommand = vehicle.charging.commands.commands['start-stop']
+        if not isinstance(start_stop_command, ChargingStartStopCommand):
+            self.logger.warning("Charging start-stop command is not of expected type!")
             return
 
         if newState == ChargingState.On:
             self.logger.info("Start charging")
 
             if not self.simulationMode:
-                vehicle.controls.chargingControl.value = ControlOperation.START
+                start_stop_command.value = ChargingStartStopCommand.Command.START
 
         else:
             self.logger.info("Stop charging")
 
             if not self.simulationMode:
-                vehicle.controls.chargingControl.value = ControlOperation.STOP
+                start_stop_command.value = ChargingStartStopCommand.Command.STOP
 
         self.chargingChangeRequested = True

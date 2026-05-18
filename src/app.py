@@ -21,7 +21,7 @@ def getLogs() -> str:
 
     for line in logLines:
 
-        dateMatch = re.match(r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{1,3}", line)
+        dateMatch = re.match(r"^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2},\d{1,3} :: ", line)
 
         if dateMatch == None:
             logEntries[-1] += "<br/>" + line

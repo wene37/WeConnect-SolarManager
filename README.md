@@ -3,7 +3,7 @@ With SolarManager you can automatically charge your Volkswagen ID car (e.g. ID.4
 
 It calculates from the current solar power, load and battery charge level if your car can be charged or not. If so it starts the charging process and if the sun goes down or you use more power for other things, it stops automatically. With the integrated web app you can see the logs of the current day and receive push notifications for different events.
 
-The SolarManager is written in Python and uses [WeConnect-python](https://github.com/tillsteinbach/WeConnect-python) for the connection to the vehicle (ID.3, ID.4 and so on) and [SolarEdge API](https://www.solaredge.com/sites/default/files/se_monitoring_api.pdf) or Sonnen API for getting information about current solar power.
+The SolarManager is written in Python and uses [CarConnectivity](https://github.com/tillsteinbach/CarConnectivity) for the connection to the vehicle (ID.3, ID.4 and so on) and [SolarEdge API](https://www.solaredge.com/sites/default/files/se_monitoring_api.pdf) or Sonnen API for getting information about current solar power.
 
 # Installation
 Do the following to install it for example on a Raspberry Pi in headless mode:
@@ -76,4 +76,3 @@ In the web app you currently see the today's log entries and you can enable push
 # Tested with
 - SolarEdge solar system with 12 kWh battery
 - Volkswagen ID.Buzz 2025
-- Volkswagen ID.Charger Connect

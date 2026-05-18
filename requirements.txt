@@ -1,5 +1,6 @@
 requests >= 2.27.1
-weconnect[Images] >= 0.60.11
+carconnectivity >= 0.11.9
+carconnectivity-connector-volkswagen >= 0.10.5
 flask >= 2.3.1
 cryptography >= 43.0.0
 pywebpush >= 2.0.0
