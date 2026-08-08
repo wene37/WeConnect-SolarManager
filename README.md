@@ -1,3 +1,10 @@
+## WARNING:
+:warning: :warning: :warning:
+
+**Currently this software does not work anymore as Volkswagen removed the API access to all cars. For details see discussions in [WeConnect-python](https://github.com/tillsteinbach/WeConnect-python) and [CarConnectivity](https://github.com/tillsteinbach/CarConnectivity-connector-volkswagen). If there once will be a new API access to control cars again, I will update this software to use new CarConnectivity.**
+
+:warning: :warning: :warning:
+
 # Common
 With SolarManager you can automatically charge your Volkswagen ID car (e.g. ID.4) with solar electricity, even if your wallbox does not support this or is not that good in this. There are adapters for SolarEdge and Sonnen included but may be extended with another solar system easily.
 
