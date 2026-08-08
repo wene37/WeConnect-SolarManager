@@ -1,9 +1,9 @@
 # Common
-With SolarManager you can automatically charge your Volkswagen ID car (e.g. ID.4) with solar electricity, even if your wallbox does not support this or is not that good in this. There are adapters for SolarEdge and Sonnen included but may be extended with another solar system easily.
+With SolarManager you can automatically charge your Volkswagen ID car (e.g. ID.4, ID.Buzz) or other supported brands (see below) with solar electricity, even if your wallbox does not support this or is not that good in this. There are adapters for SolarEdge and Sonnen included but may be extended with another solar system easily.
 
 It calculates from the current solar power, load and battery charge level if your car can be charged or not. If so it starts the charging process and if the sun goes down or you use more power for other things, it stops automatically. With the integrated web app you can see the logs of the current day and receive push notifications for different events.
 
-The SolarManager is written in Python and uses [CarConnectivity](https://github.com/tillsteinbach/CarConnectivity) for the connection to the vehicle (ID.3, ID.4 and so on) and [SolarEdge API](https://www.solaredge.com/sites/default/files/se_monitoring_api.pdf) or Sonnen API for getting information about current solar power.
+The SolarManager is written in Python and uses [CarConnectivity](https://github.com/tillsteinbach/CarConnectivity) for the connection to the vehicle and [SolarEdge API](https://www.solaredge.com/sites/default/files/se_monitoring_api.pdf) or Sonnen API for getting information about current solar power.
 
 # Installation
 Do the following to install it for example on a Raspberry Pi in headless mode:
@@ -39,6 +39,7 @@ In the config.txt file you find different entries you can or have to change.
 ||Port|The port where your Sonnen API is running.|
 |WeConnect|Username|Your username you use for login in the WeConnect ID App|
 ||Password|Your password you use for login in the WeConnect ID App|
+||CarBrand|Set your car's brand name. Supported brands are: "volkswagen", "skoda", "seat", "cupra", "audi"|
 
 ### Optional configuration
 |Section|Entry|Description|

@@ -23,6 +23,7 @@ Port=8080
 [WeConnect]
 Username=
 Password=
+CarBrand=volkswagen
 
 [WebApp]
 Port=5001

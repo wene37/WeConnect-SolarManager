@@ -2,7 +2,6 @@ import json
 import os
 import configparser
 import logging
-import logging.handlers
 import datetime
 
 from pathlib import Path

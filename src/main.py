@@ -8,7 +8,6 @@ import logging.handlers
 from Helper import Helper
 from time import sleep
 from SolarManager import SolarManager
-from pathlib import Path
 
 def log_setup():
     

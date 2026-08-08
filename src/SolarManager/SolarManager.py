@@ -60,15 +60,29 @@ class SolarManager:
             return
 
         self.logger.info("Initialize CarConnectivity")
+
+        carBrand = configParser.get("WeConnect", "CarBrand").lower()
+        supportedBrands = ["volkswagen", "skoda", "seat", "cupra", "audi"]
+
+        if carBrand not in supportedBrands:
+            self.logger.error(f"The car brand '{carBrand}' is not supported. Supported brands: {', '.join(supportedBrands)}. Set correct value in property 'CarBrand' in the config file and restart the service.")
+            return
+
+        carType = carBrand
+
+        if carBrand == "seat" or carBrand == "cupra":
+            carType = "seatcupra"
+
         tokenstore_file = os.path.join(os.path.dirname(__file__), "carconnectivity.token")
         config = {
             "carConnectivity": {
                 "connectors": [
                     {
-                        "type": "volkswagen",
+                        "type": carType,
                         "config": {
                             "username": username,
-                            "password": password
+                            "password": password,
+                            "brand": carBrand
                         }
                     }
                 ]
